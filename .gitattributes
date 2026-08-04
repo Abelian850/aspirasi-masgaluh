@@ -1,0 +1,9 @@
+# Normalkan akhir baris. Tanpa ini, berkas yang diedit di Windows bisa terkirim
+# dengan CRLF dan membuat skrip di GitHub Actions (yang jalan di Linux) gagal.
+* text=auto eol=lf
+
+# Berkas biner jangan diutak-atik.
+*.png binary
+*.jpg binary
+*.ico binary
+*.pdf binary

@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cek Status Aspirasi</title>
+    <link rel="icon" type="image/png" href="/ikon.png" />
+    <link rel="apple-touch-icon" href="/ikon.png" />
+    <meta name="theme-color" content="#0f766e" />
+    <link rel="stylesheet" href="/gaya.css" />
+  </head>
+  <body>
+    <header class="puncak">
+      <div class="dalam">
+        <div class="merek">
+          <img src="/logo.png" alt="Logo Mas Galuh" />
+          <div class="teks">
+            <h1>Cek Status Aspirasi</h1>
+            <p>Masukkan nomor tiket yang Anda terima saat mengirim aspirasi.</p>
+          </div>
+        </div>
+        <nav class="tautan">
+          <a href="/">Kirim aspirasi</a>
+          <a href="/status.html" aria-current="page">Cek status tiket</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="bungkus">
+      <div id="pesan"></div>
+
+      <section class="kartu">
+        <h2>Nomor tiket</h2>
+        <p class="catatan">Contoh format: <code>0007-K7QM</code></p>
+        <form id="form-cek" novalidate>
+          <div class="medan">
+            <label for="kode">Masukkan nomor tiket</label>
+            <input
+              type="text"
+              id="kode"
+              name="kode"
+              placeholder="0007-K7QM"
+              autocomplete="off"
+              spellcheck="false"
+              maxlength="9"
+            />
+          </div>
+          <div class="baris-tombol" style="margin-top: 4px">
+            <button type="submit" class="tombol" id="tombol-cek">Periksa</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="kartu sembunyi" id="hasil">
+        <h2>Hasil</h2>
+        <dl class="rincian" id="rincian"></dl>
+        <div id="kotak-balasan"></div>
+      </section>
+    </main>
+
+    <footer class="kaki" id="kaki"></footer>
+
+    <script type="module">
+      const el = (id) => document.getElementById(id);
+
+      const LABEL_STATUS = {
+        baru: "Belum ditinjau",
+        diproses: "Sedang ditindaklanjuti",
+        selesai: "Selesai",
+      };
+
+      function pesan(teks, jenis = "galat") {
+        el("pesan").innerHTML = teks
+          ? `<div class="pesan ${jenis}">${teks.replace(/</g, "&lt;")}</div>`
+          : "";
+      }
+
+      // Membantu warga: otomatis menambahkan tanda hubung dan mengubah ke huruf besar.
+      el("kode").addEventListener("input", (ev) => {
+        let v = ev.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+        if (v.length > 4) v = v.slice(0, 4) + "-" + v.slice(4, 8);
+        ev.target.value = v;
+      });
+
+      async function periksa(kode) {
+        pesan("");
+        el("hasil").classList.add("sembunyi");
+
+        if (!/^\d{4}-[A-Z0-9]{4}$/.test(kode)) {
+          pesan("Format nomor tiket belum benar. Contoh: 0007-K7QM");
+          return;
+        }
+
+        const tombol = el("tombol-cek");
+        tombol.disabled = true;
+        tombol.textContent = "Memeriksa…";
+
+        try {
+          const res = await fetch(`/api/status?kode=${encodeURIComponent(kode)}`);
+          const data = await res.json();
+          if (!data.ok) throw new Error(data.pesan || "Tiket tidak ditemukan.");
+          tampilkan(data.tiket);
+        } catch (e) {
+          pesan(e.message);
+        } finally {
+          tombol.disabled = false;
+          tombol.textContent = "Periksa";
+        }
+      }
+
+      function tampilkan(t) {
+        const rincian = el("rincian");
+        rincian.innerHTML = "";
+        const baris = [
+          ["Nomor tiket", t.kode],
+          ["Jenis", t.kategori],
+          ["Dikirim", t.waktu],
+        ];
+        for (const [k, v] of baris) {
+          const dt = document.createElement("dt");
+          dt.textContent = k;
+          const dd = document.createElement("dd");
+          dd.textContent = v;
+          rincian.append(dt, dd);
+        }
+        const dtS = document.createElement("dt");
+        dtS.textContent = "Status";
+        const ddS = document.createElement("dd");
+        const lencana = document.createElement("span");
+        lencana.className = `lencana ${t.status}`;
+        lencana.textContent = LABEL_STATUS[t.status] || t.status;
+        ddS.appendChild(lencana);
+        rincian.append(dtS, ddS);
+
+        const kotak = el("kotak-balasan");
+        kotak.innerHTML = "";
+        if (t.balasan) {
+          const judul = document.createElement("h2");
+          judul.textContent = "Tanggapan dari sekolah";
+          judul.style.fontSize = "1rem";
+          judul.style.marginTop = "20px";
+          const isi = document.createElement("div");
+          isi.className = "balasan-tersimpan";
+          isi.textContent = t.balasan;
+          kotak.append(judul, isi);
+          if (t.waktuBalasan) {
+            const w = document.createElement("p");
+            w.className = "catatan";
+            w.textContent = "Ditanggapi pada " + t.waktuBalasan;
+            kotak.appendChild(w);
+          }
+        } else {
+          const info = document.createElement("div");
+          info.className = "pesan info";
+          info.style.marginTop = "16px";
+          info.style.marginBottom = "0";
+          info.textContent =
+            "Belum ada tanggapan tertulis. Aspirasi Anda sudah masuk dan menunggu ditindaklanjuti.";
+          kotak.appendChild(info);
+        }
+
+        el("hasil").classList.remove("sembunyi");
+      }
+
+      el("form-cek").addEventListener("submit", (ev) => {
+        ev.preventDefault();
+        periksa(el("kode").value.trim().toUpperCase());
+      });
+
+      fetch("/api/config")
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.ok) el("kaki").textContent = d.config.footer || "";
+        })
+        .catch(() => {});
+
+      // Kalau datang dari halaman kirim, tiket sudah terisi dan langsung diperiksa.
+      const awal = new URLSearchParams(location.search).get("kode");
+      if (awal) {
+        el("kode").value = awal.toUpperCase();
+        periksa(awal.toUpperCase());
+      }
+    </script>
+  </body>
+</html>

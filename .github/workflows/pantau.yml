@@ -1,0 +1,62 @@
+# Pemantauan mingguan.
+#
+# CATATAN: ini TIDAK lagi wajib. Waktu masih memakai Supabase, alur kerja
+# semacam ini diperlukan supaya database tidak dibekukan setelah 7 hari diam.
+# Neon tidak punya masalah itu — computenya tidur setelah 5 menit tapi bangun
+# sendiri dalam ratusan milidetik.
+#
+# Gunanya sekarang murni pemantauan: kalau situs rusak, GitHub mengirim email
+# pemberitahuan alur kerja gagal, jadi kamu tahu sebelum ada warga yang
+# mengeluh. Hapus berkas ini kalau tidak diinginkan.
+#
+# CARA MEMASANG:
+#   Settings > Secrets and variables > Actions > tab Variables > New variable
+#   Nama: URL_SITUS   Isi: https://masgaluh.smpn30smg.online
+
+name: Pantau kesehatan situs
+
+on:
+  schedule:
+    # Setiap Senin 02:15 UTC (09:15 WIB).
+    - cron: "15 2 * * 1"
+  workflow_dispatch:
+
+jobs:
+  periksa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Periksa alamat situs sudah diatur
+        run: |
+          if [ -z "${{ vars.URL_SITUS }}" ]; then
+            echo "::error::Variable URL_SITUS belum diatur di Settings > Secrets and variables > Actions > Variables."
+            exit 1
+          fi
+
+      - name: Panggil /api/sehat
+        run: |
+          ALAMAT="${{ vars.URL_SITUS }}/api/sehat"
+          echo "Memanggil $ALAMAT"
+
+          for percobaan in 1 2 3; do
+            KODE=$(curl -sS -o balasan.json -w "%{http_code}" --max-time 30 "$ALAMAT" || echo "000")
+            echo "Percobaan $percobaan -> HTTP $KODE"
+            cat balasan.json || true
+            echo
+
+            if [ "$KODE" = "200" ]; then
+              echo "Situs sehat dan seluruh konfigurasi lengkap."
+              exit 0
+            fi
+
+            # 503 berarti situs hidup tapi ada konfigurasi yang belum lengkap.
+            if [ "$KODE" = "503" ] && grep -q '"databaseHidup":true' balasan.json; then
+              echo "::warning::Database hidup, tetapi ada konfigurasi yang belum lengkap. Periksa balasan di atas."
+              exit 0
+            fi
+
+            [ "$percobaan" -lt 3 ] && sleep 20
+          done
+
+          echo "::error::Situs tidak menjawab dengan benar setelah 3 percobaan. Periksa Cloudflare dan Neon."
+          exit 1

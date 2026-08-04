@@ -1,0 +1,18 @@
+# Konfigurasi Cloudflare Pages.
+#
+# nodejs_compat diperlukan oleh driver Neon. compatibility_date sengaja diambil
+# setelah 2025-04-01 supaya process.env ikut terisi otomatis di Workers.
+#
+# CATATAN PENTING: environment variable yang berisi rahasia (DATABASE_URL,
+# TELEGRAM_BOT_TOKEN, ADMIN_PASSWORD, SESSION_SECRET) TIDAK ditulis di sini.
+# Berkas ini masuk ke Git. Rahasia diisi lewat dashboard Cloudflare:
+#   Workers & Pages > project > Settings > Variables and Secrets > Secret.
+
+name = "aspirasi-masgaluh"
+compatibility_date = "2026-08-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "public"
+
+[vars]
+ZONA_WAKTU = "Asia/Jakarta"
+SESI_UMUR_JAM = "12"

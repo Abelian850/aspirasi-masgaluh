@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Dashboard Admin — Layanan Aspirasi</title>
+    <link rel="icon" type="image/png" href="/ikon.png" />
+    <meta name="theme-color" content="#0f766e" />
+    <link rel="stylesheet" href="/gaya.css" />
+  </head>
+  <body>
+    <header class="puncak lebar">
+      <div class="dalam">
+        <div class="merek">
+          <img src="/logo.png" alt="Logo Mas Galuh" />
+          <div class="teks">
+            <h1>Dashboard Admin</h1>
+            <p id="subjudul">Kelola dan tanggapi aspirasi yang masuk.</p>
+          </div>
+        </div>
+        <nav class="tautan">
+          <a href="/">Form warga</a>
+          <a href="/status.html">Cek status</a>
+          <a href="#" id="tautan-keluar" class="sembunyi">Keluar</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="bungkus lebar">
+      <div id="pesan"></div>
+
+      <!-- Layar masuk -->
+      <section class="kartu" id="layar-masuk" style="max-width: 420px; margin-inline: auto">
+        <h2>Masuk</h2>
+        <p class="catatan">Halaman ini hanya untuk pengelola aspirasi.</p>
+        <form id="form-masuk" novalidate>
+          <div class="medan">
+            <label for="sandi">Kata sandi admin</label>
+            <input type="password" id="sandi" autocomplete="current-password" />
+          </div>
+          <div class="baris-tombol" style="margin-top: 4px">
+            <button type="submit" class="tombol" id="tombol-masuk">Masuk</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Layar utama -->
+      <section class="sembunyi" id="layar-utama">
+        <div class="ringkas" id="ringkas"></div>
+
+        <div class="penyaring">
+          <button type="button" class="tombol sekunder kecil saring" data-status="semua">
+            Semua
+          </button>
+          <button type="button" class="tombol sekunder kecil saring" data-status="baru">
+            Belum ditinjau
+          </button>
+          <button type="button" class="tombol sekunder kecil saring" data-status="diproses">
+            Diproses
+          </button>
+          <button type="button" class="tombol sekunder kecil saring" data-status="selesai">
+            Selesai
+          </button>
+          <input type="search" id="cari" placeholder="Cari nama, isi, atau nomor tiket…" />
+          <button type="button" class="tombol sekunder kecil" id="tombol-muat">Muat ulang</button>
+        </div>
+
+        <div id="daftar"></div>
+      </section>
+    </main>
+
+    <footer class="kaki" id="kaki"></footer>
+
+    <script type="module">
+      const el = (id) => document.getElementById(id);
+      const KUNCI_TOKEN = "aspirasi_token";
+
+      const LABEL_STATUS = {
+        baru: "Belum ditinjau",
+        diproses: "Diproses",
+        selesai: "Selesai",
+      };
+
+      let saringan = "semua";
+      let pencarian = "";
+
+      function token() {
+        return sessionStorage.getItem(KUNCI_TOKEN) || "";
+      }
+
+      function pesan(teks, jenis = "galat") {
+        el("pesan").innerHTML = teks
+          ? `<div class="pesan ${jenis}">${teks.replace(/</g, "&lt;")}</div>`
+          : "";
+      }
+
+      async function panggil(jalur, opsi = {}) {
+        const res = await fetch(jalur, {
+          ...opsi,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token()}`,
+            ...(opsi.headers || {}),
+          },
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          keluar();
+          throw new Error("Sesi berakhir. Silakan masuk lagi.");
+        }
+        if (!data.ok) throw new Error(data.pesan || "Permintaan gagal.");
+        return data;
+      }
+
+      // ------------------------------------------------------------- Masuk
+
+      el("form-masuk").addEventListener("submit", async (ev) => {
+        ev.preventDefault();
+        pesan("");
+        const tombol = el("tombol-masuk");
+        tombol.disabled = true;
+        tombol.textContent = "Memeriksa…";
+        try {
+          const res = await fetch("/api/admin/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sandi: el("sandi").value }),
+          });
+          const data = await res.json();
+          if (!data.ok) throw new Error(data.pesan || "Gagal masuk.");
+          sessionStorage.setItem(KUNCI_TOKEN, data.token);
+          el("sandi").value = "";
+          masukkanTampilan();
+          await muatDaftar();
+        } catch (e) {
+          pesan(e.message);
+        } finally {
+          tombol.disabled = false;
+          tombol.textContent = "Masuk";
+        }
+      });
+
+      function masukkanTampilan() {
+        el("layar-masuk").classList.add("sembunyi");
+        el("layar-utama").classList.remove("sembunyi");
+        el("tautan-keluar").classList.remove("sembunyi");
+      }
+
+      function keluar() {
+        sessionStorage.removeItem(KUNCI_TOKEN);
+        el("layar-utama").classList.add("sembunyi");
+        el("layar-masuk").classList.remove("sembunyi");
+        el("tautan-keluar").classList.add("sembunyi");
+      }
+
+      el("tautan-keluar").addEventListener("click", (ev) => {
+        ev.preventDefault();
+        keluar();
+        pesan("Anda sudah keluar.", "info");
+      });
+
+      // ------------------------------------------------------------ Daftar
+
+      async function muatDaftar() {
+        pesan("");
+        const q = new URLSearchParams({ status: saringan });
+        if (pencarian) q.set("cari", pencarian);
+        try {
+          const data = await panggil(`/api/admin/daftar?${q}`);
+          gambarRingkas(data.statistik);
+          gambarDaftar(data.daftar);
+        } catch (e) {
+          pesan(e.message);
+        }
+      }
+
+      function gambarRingkas(s) {
+        const item = [
+          ["Total", s.total],
+          ["Belum ditinjau", s.baru],
+          ["Diproses", s.diproses],
+          ["Selesai", s.selesai],
+        ];
+        el("ringkas").innerHTML = "";
+        for (const [label, angka] of item) {
+          const d = document.createElement("div");
+          d.className = "angka";
+          const b = document.createElement("b");
+          b.textContent = angka;
+          const sp = document.createElement("span");
+          sp.textContent = label;
+          d.append(b, sp);
+          el("ringkas").appendChild(d);
+        }
+      }
+
+      function gambarDaftar(daftar) {
+        const wadah = el("daftar");
+        wadah.innerHTML = "";
+
+        if (!daftar.length) {
+          const kosong = document.createElement("div");
+          kosong.className = "kartu";
+          kosong.style.textAlign = "center";
+          kosong.style.color = "var(--teks-lembut)";
+          kosong.textContent = "Tidak ada aspirasi yang cocok dengan penyaring ini.";
+          wadah.appendChild(kosong);
+          return;
+        }
+
+        for (const a of daftar) wadah.appendChild(kartuAspirasi(a));
+      }
+
+      function kartuAspirasi(a) {
+        const kartu = document.createElement("article");
+        kartu.className = "aspirasi";
+
+        const kepala = document.createElement("div");
+        kepala.className = "kepala";
+        const kode = document.createElement("span");
+        kode.className = "kode";
+        kode.textContent = "#" + a.kode;
+        const kat = document.createElement("span");
+        kat.className = "lencana kategori";
+        kat.textContent = a.kategori;
+        const st = document.createElement("span");
+        st.className = "lencana " + a.status;
+        st.textContent = LABEL_STATUS[a.status] || a.status;
+        const waktu = document.createElement("span");
+        waktu.className = "waktu";
+        waktu.textContent = a.waktu;
+        kepala.append(kode, kat, st, waktu);
+        kartu.appendChild(kepala);
+
+        const dl = document.createElement("dl");
+        const tambah = (label, nilai) => {
+          if (!nilai) return;
+          const dt = document.createElement("dt");
+          dt.textContent = label;
+          const dd = document.createElement("dd");
+          dd.textContent = nilai;
+          dl.append(dt, dd);
+        };
+        tambah("Nama", a.nama);
+        tambah("Status pelapor", a.statusPelapor);
+        tambah("Kontak", a.kontak);
+        for (const i of a.isian) tambah(i.label, i.nilai);
+        kartu.appendChild(dl);
+
+        if (a.balasan) {
+          const b = document.createElement("div");
+          b.className = "balasan-tersimpan";
+          b.textContent =
+            "Tanggapan" + (a.waktuBalasan ? ` (${a.waktuBalasan})` : "") + ":\n" + a.balasan;
+          kartu.appendChild(b);
+        }
+
+        kartu.appendChild(kotakBalas(a));
+        return kartu;
+      }
+
+      function kotakBalas(a) {
+        const kotak = document.createElement("div");
+        kotak.className = "kotak-balasan";
+
+        const ta = document.createElement("textarea");
+        ta.placeholder = a.balasan
+          ? "Ubah tanggapan…"
+          : "Tulis tanggapan yang akan dilihat warga saat mengecek nomor tiket…";
+        ta.value = a.balasan || "";
+        kotak.appendChild(ta);
+
+        const baris = document.createElement("div");
+        baris.style.display = "flex";
+        baris.style.gap = "8px";
+        baris.style.flexWrap = "wrap";
+        baris.style.alignItems = "center";
+
+        const pilihStatus = document.createElement("select");
+        pilihStatus.style.width = "auto";
+        for (const [nilai, label] of Object.entries(LABEL_STATUS)) {
+          const o = document.createElement("option");
+          o.value = nilai;
+          o.textContent = label;
+          if (nilai === a.status) o.selected = true;
+          pilihStatus.appendChild(o);
+        }
+
+        const simpan = document.createElement("button");
+        simpan.type = "button";
+        simpan.className = "tombol kecil";
+        simpan.textContent = "Simpan";
+
+        const kabar = document.createElement("span");
+        kabar.style.fontSize = "0.85rem";
+        kabar.style.color = "var(--teks-lembut)";
+
+        simpan.addEventListener("click", async () => {
+          simpan.disabled = true;
+          simpan.textContent = "Menyimpan…";
+          kabar.textContent = "";
+          try {
+            await panggil("/api/admin/balas", {
+              method: "POST",
+              body: JSON.stringify({
+                kode: a.kode,
+                balasan: ta.value,
+                status: pilihStatus.value,
+              }),
+            });
+            kabar.textContent = "Tersimpan.";
+            kabar.style.color = "var(--sukses)";
+            setTimeout(muatDaftar, 700);
+          } catch (e) {
+            kabar.textContent = e.message;
+            kabar.style.color = "var(--bahaya)";
+          } finally {
+            simpan.disabled = false;
+            simpan.textContent = "Simpan";
+          }
+        });
+
+        baris.append(pilihStatus, simpan, kabar);
+        kotak.appendChild(baris);
+        return kotak;
+      }
+
+      // --------------------------------------------------------- Penyaring
+
+      function segarkanTombolSaring() {
+        document.querySelectorAll(".saring").forEach((b) => {
+          const aktif = b.dataset.status === saringan;
+          b.classList.toggle("sekunder", !aktif);
+        });
+      }
+
+      document.querySelectorAll(".saring").forEach((b) => {
+        b.addEventListener("click", () => {
+          saringan = b.dataset.status;
+          segarkanTombolSaring();
+          muatDaftar();
+        });
+      });
+
+      let jedaCari;
+      el("cari").addEventListener("input", (ev) => {
+        clearTimeout(jedaCari);
+        pencarian = ev.target.value.trim();
+        jedaCari = setTimeout(muatDaftar, 350);
+      });
+
+      el("tombol-muat").addEventListener("click", muatDaftar);
+
+      // ------------------------------------------------------------- Awal
+
+      fetch("/api/config")
+        .then((r) => r.json())
+        .then((d) => {
+          if (!d.ok) return;
+          el("kaki").textContent = d.config.footer || "";
+          el("subjudul").textContent = `${d.config.namaLayanan} — ${d.config.namaSekolah}`;
+        })
+        .catch(() => {});
+
+      segarkanTombolSaring();
+      if (token()) {
+        masukkanTampilan();
+        muatDaftar();
+      }
+    </script>
+  </body>
+</html>

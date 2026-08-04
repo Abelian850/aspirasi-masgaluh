@@ -1,0 +1,19 @@
+{
+  "name": "layanan-aspirasi",
+  "version": "2.0.0",
+  "description": "Layanan aspirasi berbasis web. Cloudflare Pages + Neon Postgres + notifikasi Telegram.",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node server.js",
+    "uji": "node uji.js",
+    "dev:cf": "wrangler pages dev",
+    "deploy": "wrangler pages deploy"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2"
+  },
+  "devDependencies": {
+    "wrangler": "^4.42.0"
+  }
+}

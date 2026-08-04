@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Layanan Aspirasi</title>
+    <link rel="icon" type="image/png" href="/ikon.png" />
+    <link rel="apple-touch-icon" href="/ikon.png" />
+    <meta name="theme-color" content="#0f766e" />
+    <link rel="stylesheet" href="/gaya.css" />
+  </head>
+  <body>
+    <header class="puncak">
+      <div class="dalam">
+        <div class="merek">
+          <img src="/logo.png" alt="Logo Mas Galuh" />
+          <div class="teks">
+            <h1 id="judul">Layanan Aspirasi</h1>
+            <p id="subjudul">Memuat…</p>
+          </div>
+        </div>
+        <nav class="tautan">
+          <a href="/" aria-current="page">Kirim aspirasi</a>
+          <a href="/status.html">Cek status tiket</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="bungkus">
+      <div id="pesan"></div>
+
+      <!-- Langkah 1: pilih kategori -->
+      <section class="kartu" id="langkah-kategori">
+        <h2>1. Pilih jenis aspirasi</h2>
+        <p class="catatan">Pilih salah satu yang paling sesuai.</p>
+        <div class="daftar-layanan" id="daftar-layanan"></div>
+      </section>
+
+      <!-- Langkah 2: isi form -->
+      <section class="kartu sembunyi" id="langkah-form">
+        <h2 id="judul-form">2. Isi keterangan</h2>
+        <p class="catatan" id="ket-form"></p>
+        <form id="form" novalidate>
+          <div id="medan-form"></div>
+
+          <div class="jebakan" aria-hidden="true">
+            <label for="website">Jangan diisi</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div class="baris-tombol">
+            <button type="submit" class="tombol" id="tombol-kirim">Kirim aspirasi</button>
+            <button type="button" class="tombol sekunder" id="tombol-batal">Ganti jenis</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Langkah 3: tanda terima -->
+      <section class="kartu sembunyi" id="langkah-selesai">
+        <h2>Aspirasi terkirim</h2>
+        <p class="catatan" id="teks-konfirmasi"></p>
+        <div class="kotak-tiket">
+          <div class="label">Nomor tiket Anda</div>
+          <div class="kode" id="kode-tiket">----</div>
+        </div>
+        <div class="pesan info">
+          Simpan atau catat nomor tiket di atas. Nomor ini satu-satunya cara memantau tindak
+          lanjut aspirasi Anda, dan tidak dapat dikirim ulang bila hilang.
+        </div>
+        <div class="baris-tombol">
+          <button type="button" class="tombol" id="tombol-salin">Salin nomor tiket</button>
+          <a class="tombol sekunder" id="tautan-status" href="/status.html">Cek status</a>
+          <button type="button" class="tombol sekunder" id="tombol-lagi">Kirim aspirasi lain</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="kaki" id="kaki"></footer>
+
+    <script type="module">
+      const el = (id) => document.getElementById(id);
+      let konfig = null;
+      let layananTerpilih = null;
+
+      function tampilkanPesan(teks, jenis = "galat") {
+        el("pesan").innerHTML = teks
+          ? `<div class="pesan ${jenis}">${teks.replace(/</g, "&lt;")}</div>`
+          : "";
+        if (teks) window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      async function muat() {
+        try {
+          const res = await fetch("/api/config");
+          const data = await res.json();
+          if (!data.ok) throw new Error("Konfigurasi gagal dimuat.");
+          konfig = data.config;
+          gambarKepala();
+          gambarLayanan();
+        } catch (e) {
+          tampilkanPesan("Halaman gagal dimuat. Coba muat ulang. (" + e.message + ")");
+        }
+      }
+
+      function gambarKepala() {
+        el("judul").textContent = `${konfig.namaLayanan} — ${konfig.namaSekolah}`;
+        el("subjudul").textContent = konfig.deskripsiSingkat || "";
+        el("kaki").textContent = konfig.footer || "";
+        document.title = `${konfig.namaLayanan} — Layanan Aspirasi`;
+      }
+
+      function gambarLayanan() {
+        const wadah = el("daftar-layanan");
+        wadah.innerHTML = "";
+        for (const l of konfig.layanan) {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "pilihan-layanan";
+          b.setAttribute("aria-pressed", "false");
+          b.innerHTML = `
+            <span class="ikon" aria-hidden="true"></span>
+            <span>
+              <strong></strong>
+              <span class="ket"></span>
+            </span>`;
+          b.querySelector(".ikon").textContent = l.ikon || l.id;
+          b.querySelector("strong").textContent = l.nama;
+          b.querySelector(".ket").textContent = l.deskripsi || "";
+          b.addEventListener("click", () => pilih(l, b));
+          wadah.appendChild(b);
+        }
+      }
+
+      function pilih(layanan, tombol) {
+        layananTerpilih = layanan;
+        document
+          .querySelectorAll(".pilihan-layanan")
+          .forEach((x) => x.setAttribute("aria-pressed", "false"));
+        tombol.setAttribute("aria-pressed", "true");
+        gambarForm();
+        el("langkah-form").classList.remove("sembunyi");
+        el("langkah-form").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function buatMedan(field) {
+        const bungkus = document.createElement("div");
+        bungkus.className = "medan";
+        bungkus.dataset.field = field.nama;
+
+        const id = `f-${field.nama}`;
+        const label = document.createElement("label");
+        label.setAttribute("for", id);
+        label.textContent = field.label;
+        if (field.wajib) {
+          const bintang = document.createElement("span");
+          bintang.className = "wajib";
+          bintang.textContent = " *";
+          label.appendChild(bintang);
+        }
+        if (field.bantuan) {
+          const b = document.createElement("span");
+          b.className = "bantuan";
+          b.textContent = field.bantuan;
+          label.appendChild(b);
+        }
+        bungkus.appendChild(label);
+
+        let masukan;
+        if (field.tipe === "teks_panjang") {
+          masukan = document.createElement("textarea");
+        } else if (field.tipe === "pilihan") {
+          masukan = document.createElement("select");
+          const kosong = document.createElement("option");
+          kosong.value = "";
+          kosong.textContent = "— pilih —";
+          masukan.appendChild(kosong);
+          for (const o of field.opsi || []) {
+            const opt = document.createElement("option");
+            opt.value = o;
+            opt.textContent = o;
+            masukan.appendChild(opt);
+          }
+        } else {
+          masukan = document.createElement("input");
+          masukan.type = "text";
+        }
+        masukan.id = id;
+        masukan.name = field.nama;
+        if (field.placeholder) masukan.placeholder = field.placeholder;
+        if (field.wajib) masukan.required = true;
+        masukan.addEventListener("change", perbaruiTampilBersyarat);
+        bungkus.appendChild(masukan);
+
+        return bungkus;
+      }
+
+      function medanAktif() {
+        return [...(konfig.fieldUmum || []), ...(layananTerpilih.fields || [])];
+      }
+
+      function gambarForm() {
+        el("judul-form").textContent = `2. Isi keterangan — ${layananTerpilih.nama}`;
+        el("ket-form").textContent =
+          "Tanda * berarti wajib diisi. Gunakan bahasa yang sopan dan jelas.";
+        const wadah = el("medan-form");
+        wadah.innerHTML = "";
+        for (const f of medanAktif()) wadah.appendChild(buatMedan(f));
+        perbaruiTampilBersyarat();
+      }
+
+      function nilaiSekarang() {
+        const hasil = {};
+        for (const f of medanAktif()) {
+          const n = document.getElementById(`f-${f.nama}`);
+          if (n) hasil[f.nama] = n.value.trim();
+        }
+        return hasil;
+      }
+
+      // Menyembunyikan field yang tidak relevan, misalnya "Nama anak & kelas"
+      // hanya muncul kalau status pelapor adalah Wali murid.
+      function perbaruiTampilBersyarat() {
+        const nilai = nilaiSekarang();
+        for (const f of medanAktif()) {
+          if (!f.tampilJika) continue;
+          const bungkus = document.querySelector(`.medan[data-field="${f.nama}"]`);
+          if (!bungkus) continue;
+          const tampil = (f.tampilJika.nilai || []).includes(nilai[f.tampilJika.field]);
+          bungkus.classList.toggle("sembunyi", !tampil);
+        }
+      }
+
+      function fieldTerlihat(f) {
+        const bungkus = document.querySelector(`.medan[data-field="${f.nama}"]`);
+        return bungkus && !bungkus.classList.contains("sembunyi");
+      }
+
+      el("form").addEventListener("submit", async (ev) => {
+        ev.preventDefault();
+        tampilkanPesan("");
+
+        const jawaban = nilaiSekarang();
+        const kurang = medanAktif()
+          .filter((f) => f.wajib && fieldTerlihat(f) && !jawaban[f.nama])
+          .map((f) => f.label);
+        if (kurang.length) {
+          tampilkanPesan("Masih ada yang belum diisi: " + kurang.join(", ") + ".");
+          return;
+        }
+
+        const tombol = el("tombol-kirim");
+        tombol.disabled = true;
+        tombol.textContent = "Mengirim…";
+
+        try {
+          const res = await fetch("/api/aspirasi", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              layanan: layananTerpilih.id,
+              jawaban,
+              website: el("website").value,
+            }),
+          });
+          const data = await res.json();
+          if (!data.ok) throw new Error(data.pesan || "Pengiriman gagal.");
+          selesai(data);
+        } catch (e) {
+          tampilkanPesan(e.message);
+        } finally {
+          tombol.disabled = false;
+          tombol.textContent = "Kirim aspirasi";
+        }
+      });
+
+      function selesai(data) {
+        el("langkah-kategori").classList.add("sembunyi");
+        el("langkah-form").classList.add("sembunyi");
+        el("langkah-selesai").classList.remove("sembunyi");
+        el("teks-konfirmasi").textContent = data.pesan || "";
+        el("kode-tiket").textContent = data.kode;
+        el("tautan-status").href = `/status.html?kode=${encodeURIComponent(data.kode)}`;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      el("tombol-batal").addEventListener("click", () => {
+        el("langkah-form").classList.add("sembunyi");
+        layananTerpilih = null;
+        document
+          .querySelectorAll(".pilihan-layanan")
+          .forEach((x) => x.setAttribute("aria-pressed", "false"));
+        el("langkah-kategori").scrollIntoView({ behavior: "smooth" });
+      });
+
+      el("tombol-lagi").addEventListener("click", () => {
+        el("langkah-selesai").classList.add("sembunyi");
+        el("langkah-kategori").classList.remove("sembunyi");
+        layananTerpilih = null;
+        document
+          .querySelectorAll(".pilihan-layanan")
+          .forEach((x) => x.setAttribute("aria-pressed", "false"));
+        tampilkanPesan("");
+      });
+
+      el("tombol-salin").addEventListener("click", async () => {
+        const kode = el("kode-tiket").textContent;
+        try {
+          await navigator.clipboard.writeText(kode);
+          el("tombol-salin").textContent = "Tersalin";
+          setTimeout(() => (el("tombol-salin").textContent = "Salin nomor tiket"), 2000);
+        } catch {
+          tampilkanPesan("Salin manual: " + kode, "info");
+        }
+      });
+
+      muat();
+    </script>
+  </body>
+</html>
