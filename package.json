@@ -7,13 +7,11 @@
   "scripts": {
     "start": "node server.js",
     "uji": "node uji.js",
-    "dev:cf": "wrangler pages dev",
-    "deploy": "wrangler pages deploy"
+    "dev:cf": "npx wrangler pages dev",
+    "deploy": "npx wrangler pages deploy"
   },
+  "//": "Hanya satu dependency, disengaja. Wrangler TIDAK didaftarkan di sini karena menarik puluhan paket native (workerd, sharp) yang memperlambat build Cloudflare dan tidak dibutuhkan: deploy berjalan lewat integrasi Git. Skrip dev:cf dan deploy memakai npx, jadi wrangler diunduh hanya saat benar-benar dipanggil.",
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2"
-  },
-  "devDependencies": {
-    "wrangler": "^4.42.0"
   }
 }
