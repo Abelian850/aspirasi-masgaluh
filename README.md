@@ -158,8 +158,18 @@ dikeluarkan dari situ.
    | Kolom | Isi |
    |---|---|
    | Framework preset | None |
-   | Build command | *(kosongkan)* |
+   | Build command | `echo dependencies siap` |
    | Build output directory | `public` |
+
+   > **Build command tidak boleh kosong.** Ini menjebak dan pesan errornya
+   > menyesatkan. Kalau kolom itu kosong, Cloudflare melewati seluruh langkah
+   > Node — termasuk memasang dependency — lalu gagal dengan
+   > `Could not resolve "@neondatabase/serverless"`, yang terlihat seperti
+   > masalah kode padahal bukan.
+   >
+   > Perintahnya sendiri tidak penting; kehadirannya yang memicu Cloudflare
+   > menjalankan `npm clean-install`. Karena itu dipakai `echo` saja: tidak
+   > mungkin gagal, dan tidak menambah titik kegagalan baru.
 
 3. **Environment variables**, isi sebelum deploy pertama:
 
@@ -169,8 +179,17 @@ dikeluarkan dari situ.
    | `TELEGRAM_BOT_TOKEN` | Secret | dari BotFather |
    | `ADMIN_PASSWORD` | Secret | kata sandi dashboard |
    | `SESSION_SECRET` | Secret | hasil perintah acak di bawah |
-   | `TELEGRAM_CHAT_ID` | Text | id chat admin |
-   | `URL_PUBLIK` | Text | `https://masgaluh.smpn30smg.online` |
+   | `TELEGRAM_CHAT_ID` | **Secret** | id chat admin |
+
+   `URL_PUBLIK` **tidak perlu diisi** — kode otomatis memakai alamat situs
+   sendiri kalau kosong.
+
+   > Kenapa `TELEGRAM_CHAT_ID` dibuat Secret, bukan Text? Karena repo ini punya
+   > `wrangler.toml`, dan menurut dokumentasi Cloudflare berkas itu menjadi
+   > *source of truth*: variabel bertipe **Text** yang diisi di dashboard akan
+   > **diabaikan**. Secret disimpan lewat mekanisme terpisah sehingga tidak
+   > terkena aturan itu. Kalau nanti ada pengaturan non-rahasia baru,
+   > tempatnya di `[vars]` dalam `wrangler.toml`, bukan di dashboard.
 
    Membuat `SESSION_SECRET`:
 
