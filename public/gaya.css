@@ -1,9 +1,17 @@
 /* Gaya bersama untuk seluruh halaman Layanan Aspirasi. */
 
+/* Palet diturunkan dari lambang SMP Negeri 30 Semarang.
+   Warna asli lambang: biru #003CF9, merah #EB3237, kuning #FEF011.
+   Biru lambang terlalu jenuh untuk dipakai sebagai warna antarmuka — dipakai
+   apa adanya, teks di atasnya sulit dibaca dan matanya cepat lelah. Yang
+   dipakai di sini navy serumpun (rona 224 derajat, praktis sama dengan
+   lambang) yang digelapkan sampai kontrasnya terhadap putih 10,4:1.
+   Kuning lambang dipakai sebagai aksen, bukan warna teks. */
 :root {
-  --utama: #0f766e;
-  --utama-gelap: #115e59;
-  --utama-muda: #ccfbf1;
+  --utama: #1e3a8a;
+  --utama-gelap: #172e6e;
+  --utama-muda: #dbeafe;
+  --aksen: #facc15;
   --teks: #1f2937;
   --teks-lembut: #6b7280;
   --garis: #e5e7eb;
@@ -46,10 +54,12 @@ body {
 /* ------------------------------------------------------------- Kepala */
 
 header.puncak {
-  background: linear-gradient(135deg, #134e4a 0%, var(--utama) 60%, #0d9488 100%);
+  background: linear-gradient(135deg, #142a63 0%, var(--utama) 55%, #2b4fc4 100%);
   color: #fff;
   padding: 24px 16px 26px;
   margin-bottom: 24px;
+  /* Garis kuning tipis mengambil warna pita "SMP 30 SEMARANG" di lambang. */
+  border-bottom: 3px solid var(--aksen);
 }
 
 header.puncak .dalam {
@@ -73,7 +83,9 @@ header.puncak p {
   font-size: 0.95rem;
 }
 
-/* Logo. Berkas logo.png berlatar transparan, jadi bisa ditaruh di atas warna apa pun. */
+/* Logo. Kedua berkas berlatar transparan, jadi bisa ditaruh di atas warna apa
+   pun. Susunan: logo layanan di kiri, judul di tengah, lambang sekolah di
+   kanan. */
 .merek {
   display: flex;
   align-items: center;
@@ -85,17 +97,29 @@ header.puncak p {
   height: 62px;
   width: auto;
   flex: 0 0 auto;
-  /* Bayangan tipis supaya emas tetap terbaca di atas latar hijau. */
+  /* Bayangan tipis supaya emas dan putih tetap terbaca di atas latar navy. */
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
 }
 
 .merek .teks {
+  /* Melar mengisi ruang sisa supaya lambang sekolah terdorong ke tepi kanan. */
+  flex: 1 1 220px;
   min-width: 200px;
+}
+
+/* Lambang sekolah sedikit lebih kecil: bentuknya padat dan berwarna penuh,
+   kalau disamakan tingginya dia mendominasi logo layanan. */
+.merek .logo-sekolah {
+  height: 54px;
+  margin-left: auto;
 }
 
 @media (max-width: 480px) {
   .merek img {
     height: 46px;
+  }
+  .merek .logo-sekolah {
+    height: 40px;
   }
   header.puncak h1 {
     font-size: 1.25rem;
@@ -170,7 +194,7 @@ nav.tautan a[aria-current="page"] {
 
 .pilihan-layanan:hover {
   border-color: var(--utama);
-  background: #f0fdfa;
+  background: #eff4ff;
 }
 
 .pilihan-layanan[aria-pressed="true"] {
@@ -338,7 +362,7 @@ button.tombol.kecil {
 .pesan.info {
   background: var(--utama-muda);
   color: var(--utama-gelap);
-  border-color: #99f6e4;
+  border-color: #bfdbfe;
 }
 
 .pesan.sukses {
@@ -388,9 +412,11 @@ button.tombol.kecil {
   color: var(--peringatan);
 }
 
+/* Nila, bukan biru. Sejak tema utama jadi navy, lencana biru tidak lagi
+   terbaca sebagai status — dia melebur dengan warna antarmuka. */
 .lencana.diproses {
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: #e0e7ff;
+  color: #3730a3;
 }
 
 .lencana.selesai {
