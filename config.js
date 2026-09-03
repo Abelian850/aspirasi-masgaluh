@@ -22,6 +22,34 @@ export default {
     "Media Aspirasi Spegaluh — wadah aspirasi warga sekolah dan masyarakat umum",
   footer: "Dikirim otomatis oleh Layanan Aspirasi Mas Galuh",
 
+  // ---------------------------------------------------------------------------
+  // Gerbang pilihan saluran: warga memilih melapor lewat WhatsApp atau lewat
+  // web ini. Kalau aktif: false, gerbang tidak ditampilkan dan halaman langsung
+  // membuka pilihan kategori seperti sebelumnya.
+  //
+  // tautan harus tautan wa.me / api.whatsapp.com yang sudah berisi nomor
+  // tujuan. Nomor ditulis dengan kode negara tanpa tanda plus (62..., bukan
+  // 08...).
+  //
+  // catatan muncul di bawah kedua pilihan. Ini yang memberi tahu warga bahwa
+  // web tetap bisa dipakai bila WhatsApp tidak dibalas atau sedang mati, jadi
+  // jangan dihapus tanpa mengganti dengan kalimat yang sepadan.
+  // ---------------------------------------------------------------------------
+  whatsapp: {
+    aktif: true,
+    tautan:
+      "https://api.whatsapp.com/send/?phone=6281319426151&text&type=phone_number&app_absent=0",
+    nomorTampil: "0813-1942-6151",
+    deskripsi:
+      "Chat langsung dengan admin. Cocok bila Anda ingin bertanya dulu " +
+      "atau lebih nyaman memakai WhatsApp.",
+    catatan:
+      "Bila WhatsApp tidak dapat dihubungi, tidak dibalas, atau nomor admin " +
+      "sedang tidak aktif, aspirasi Anda tetap dapat dikirim lewat formulir " +
+      "web di halaman ini. Laporan lewat web selalu masuk dan diberi nomor " +
+      "tiket yang bisa Anda pantau sendiri.",
+  },
+
   // {KATEGORI} otomatis diganti dengan jenis aspirasi yang dipilih warga.
   pesanKonfirmasi:
     "Terima kasih. {KATEGORI} Anda telah kami terima dan akan diteruskan " +

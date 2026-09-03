@@ -23,6 +23,7 @@ export function configPublik() {
     deskripsiSingkat: c.deskripsiSingkat,
     footer: c.footer,
     pesanKonfirmasi: c.pesanKonfirmasi,
+    whatsapp: c.whatsapp || null,
     fieldUmum: c.fieldUmum,
     layanan: c.layanan,
   };

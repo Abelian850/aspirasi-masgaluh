@@ -91,6 +91,23 @@ console.log("\n1. Konfigurasi");
   cek("ada 4 layanan", d.config?.layanan?.length === 4, `dapat ${d.config?.layanan?.length}`);
   cek("field umum ada", (d.config?.fieldUmum || []).length > 0);
   cek("nama sekolah terkirim", Boolean(d.config?.namaSekolah));
+
+  // Gerbang pilihan saluran di halaman warga dibangun dari blok ini. Kalau
+  // tautannya hilang atau ditulis pakai 08..., gerbangnya diam-diam tidak
+  // muncul atau membuka chat ke nomor yang salah.
+  const wa = d.config?.whatsapp;
+  cek("blok whatsapp terkirim ke browser", Boolean(wa));
+  if (wa?.aktif) {
+    cek("tautan whatsapp diisi", /^https:\/\/(api\.whatsapp\.com|wa\.me)\//.test(wa.tautan || ""), wa.tautan);
+    cek("nomor whatsapp pakai kode negara", /[?/]phone=\d{10,15}|wa\.me\/\d{10,15}/.test(wa.tautan || ""), wa.tautan);
+    cek("catatan jalur cadangan ada", (wa.catatan || "").length > 20);
+  }
+
+  // Halaman warga memuat gerbang, dan tetap bisa jatuh ke jalur web.
+  const beranda = readFileSync(join(here, "public/index.html"), "utf8");
+  cek("gerbang saluran ada di halaman", beranda.includes('id="langkah-gate"'));
+  cek("pilihan web ada di halaman", beranda.includes('id="pilih-web"'));
+  cek("tautan whatsapp dibuka di tab baru", /id="pilih-wa"[\s\S]{0,160}target="_blank"/.test(beranda));
 }
 
 console.log("\n2. Kirim aspirasi yang sah");

@@ -10,7 +10,7 @@
     <!-- Angka ?v= wajib dinaikkan setiap kali gaya.css diubah. Cloudflare
          menyuruh browser menyimpan berkas statis 4 jam; tanpa penanda versi,
          perubahan gaya tidak terlihat sampai cache itu habis. -->
-    <link rel="stylesheet" href="/gaya.css?v=2" />
+    <link rel="stylesheet" href="/gaya.css?v=3" />
   </head>
   <body>
     <header class="puncak">
@@ -37,16 +37,57 @@
     <main class="bungkus">
       <div id="pesan"></div>
 
-      <!-- Langkah 1: pilih kategori -->
-      <section class="kartu" id="langkah-kategori">
-        <h2>1. Pilih jenis aspirasi</h2>
+      <!-- Langkah 1: pilih saluran (WhatsApp atau web).
+           Kartu ini hanya muncul bila config.whatsapp.aktif bernilai true. -->
+      <section class="kartu sembunyi" id="langkah-gate">
+        <h2>1. Pilih cara melapor</h2>
+        <p class="catatan">
+          Keduanya sampai ke pihak sekolah. Pilih yang paling nyaman untuk Anda.
+        </p>
+        <div class="daftar-layanan">
+          <a
+            class="pilihan-layanan"
+            id="pilih-wa"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="ikon wa" aria-hidden="true">WA</span>
+            <span>
+              <strong>Lapor lewat WhatsApp</strong>
+              <span class="ket" id="ket-wa"></span>
+              <span class="nomor" id="nomor-wa"></span>
+            </span>
+          </a>
+          <button type="button" class="pilihan-layanan" id="pilih-web">
+            <span class="ikon web" aria-hidden="true">W</span>
+            <span>
+              <strong>Lapor lewat web ini</strong>
+              <span class="ket">
+                Isi formulir singkat, lalu Anda langsung menerima nomor tiket untuk
+                memantau sendiri tindak lanjutnya.
+              </span>
+            </span>
+          </button>
+        </div>
+        <div class="pesan info catatan-gate" id="catatan-wa"></div>
+      </section>
+
+      <!-- Langkah 2: pilih kategori -->
+      <section class="kartu sembunyi" id="langkah-kategori">
+        <h2 id="judul-kategori">Pilih jenis aspirasi</h2>
         <p class="catatan">Pilih salah satu yang paling sesuai.</p>
         <div class="daftar-layanan" id="daftar-layanan"></div>
+        <div class="baris-tombol sembunyi" id="baris-kembali-gate">
+          <button type="button" class="tombol sekunder" id="tombol-kembali-gate">
+            Ganti cara melapor
+          </button>
+        </div>
       </section>
 
       <!-- Langkah 2: isi form -->
       <section class="kartu sembunyi" id="langkah-form">
-        <h2 id="judul-form">2. Isi keterangan</h2>
+        <h2 id="judul-form">Isi keterangan</h2>
         <p class="catatan" id="ket-form"></p>
         <form id="form" novalidate>
           <div id="medan-form"></div>
@@ -89,6 +130,10 @@
       const el = (id) => document.getElementById(id);
       let konfig = null;
       let layananTerpilih = null;
+      // Gerbang saluran aktif hanya bila config menyediakan tautan WhatsApp.
+      // Kalau tidak, halaman berperilaku persis seperti sebelum gerbang ada:
+      // langsung membuka pilihan kategori, dan penomoran langkah mundur satu.
+      let gateAktif = false;
 
       function tampilkanPesan(teks, jenis = "galat") {
         el("pesan").innerHTML = teks
@@ -103,8 +148,16 @@
           const data = await res.json();
           if (!data.ok) throw new Error("Konfigurasi gagal dimuat.");
           konfig = data.config;
+          const wa = konfig.whatsapp;
+          gateAktif = Boolean(wa && wa.aktif && wa.tautan);
           gambarKepala();
+          gambarGate();
           gambarLayanan();
+          if (gateAktif) {
+            el("langkah-gate").classList.remove("sembunyi");
+          } else {
+            el("langkah-kategori").classList.remove("sembunyi");
+          }
         } catch (e) {
           tampilkanPesan("Halaman gagal dimuat. Coba muat ulang. (" + e.message + ")");
         }
@@ -115,6 +168,30 @@
         el("subjudul").textContent = konfig.deskripsiSingkat || "";
         el("kaki").textContent = konfig.footer || "";
         document.title = `${konfig.namaLayanan} — Layanan Aspirasi`;
+      }
+
+      // Penomoran judul mengikuti ada-tidaknya gerbang, supaya warga tidak
+      // membaca "2. Pilih jenis aspirasi" pada halaman yang cuma punya dua
+      // langkah.
+      function nomor(langkahDenganGate) {
+        return gateAktif ? langkahDenganGate : langkahDenganGate - 1;
+      }
+
+      function gambarGate() {
+        const wa = konfig.whatsapp || {};
+        el("judul-kategori").textContent = `${nomor(2)}. Pilih jenis aspirasi`;
+        if (!gateAktif) return;
+        el("pilih-wa").href = wa.tautan;
+        el("ket-wa").textContent = wa.deskripsi || "";
+        el("nomor-wa").textContent = wa.nomorTampil || "";
+        el("catatan-wa").textContent = wa.catatan || "";
+        el("baris-kembali-gate").classList.remove("sembunyi");
+      }
+
+      function bukaJalurWeb() {
+        el("langkah-gate").classList.add("sembunyi");
+        el("langkah-kategori").classList.remove("sembunyi");
+        el("langkah-kategori").scrollIntoView({ behavior: "smooth", block: "start" });
       }
 
       function gambarLayanan() {
@@ -142,7 +219,7 @@
       function pilih(layanan, tombol) {
         layananTerpilih = layanan;
         document
-          .querySelectorAll(".pilihan-layanan")
+          .querySelectorAll("#daftar-layanan .pilihan-layanan")
           .forEach((x) => x.setAttribute("aria-pressed", "false"));
         tombol.setAttribute("aria-pressed", "true");
         gambarForm();
@@ -207,7 +284,7 @@
       }
 
       function gambarForm() {
-        el("judul-form").textContent = `2. Isi keterangan — ${layananTerpilih.nama}`;
+        el("judul-form").textContent = `${nomor(3)}. Isi keterangan — ${layananTerpilih.nama}`;
         el("ket-form").textContent =
           "Tanda * berarti wajib diisi. Gunakan bahasa yang sopan dan jelas.";
         const wadah = el("medan-form");
@@ -291,11 +368,37 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
+      el("pilih-web").addEventListener("click", bukaJalurWeb);
+
+      // Tautan WhatsApp tetap berjalan normal (buka tab baru). Yang ditambahkan
+      // di sini hanya pengingat: kalau tab itu tidak terbuka atau chat tidak
+      // dibalas, jalur web masih tersedia di halaman yang sama.
+      el("pilih-wa").addEventListener("click", () => {
+        tampilkanPesan(
+          "WhatsApp dibuka di tab baru. Bila tidak terbuka atau tidak dibalas, " +
+            "Anda tetap bisa mengirim aspirasi lewat formulir di halaman ini — " +
+            "pilih “Lapor lewat web ini”.",
+          "info"
+        );
+      });
+
+      el("tombol-kembali-gate").addEventListener("click", () => {
+        el("langkah-kategori").classList.add("sembunyi");
+        el("langkah-form").classList.add("sembunyi");
+        layananTerpilih = null;
+        document
+          .querySelectorAll("#daftar-layanan .pilihan-layanan")
+          .forEach((x) => x.setAttribute("aria-pressed", "false"));
+        tampilkanPesan("");
+        el("langkah-gate").classList.remove("sembunyi");
+        el("langkah-gate").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
       el("tombol-batal").addEventListener("click", () => {
         el("langkah-form").classList.add("sembunyi");
         layananTerpilih = null;
         document
-          .querySelectorAll(".pilihan-layanan")
+          .querySelectorAll("#daftar-layanan .pilihan-layanan")
           .forEach((x) => x.setAttribute("aria-pressed", "false"));
         el("langkah-kategori").scrollIntoView({ behavior: "smooth" });
       });
@@ -305,7 +408,7 @@
         el("langkah-kategori").classList.remove("sembunyi");
         layananTerpilih = null;
         document
-          .querySelectorAll(".pilihan-layanan")
+          .querySelectorAll("#daftar-layanan .pilihan-layanan")
           .forEach((x) => x.setAttribute("aria-pressed", "false"));
         tampilkanPesan("");
       });

@@ -226,6 +226,41 @@ nav.tautan a[aria-current="page"] {
   line-height: 1.45;
 }
 
+/* ------------------------------------------------- Gerbang saluran */
+
+/* Pilihan "lapor lewat WhatsApp" adalah tautan keluar, bukan tombol, supaya
+   bisa dibuka di tab baru dan disalin alamatnya. Tampilannya disamakan dengan
+   .pilihan-layanan agar kedua pilihan terlihat setara — web tidak boleh
+   terkesan sebagai jalur cadangan. */
+a.pilihan-layanan {
+  text-decoration: none;
+}
+
+/* Hijau WhatsApp dipakai hanya pada kotak ikon, tidak pada teks, supaya
+   kontras teks tetap mengikuti palet utama. */
+.pilihan-layanan .ikon.wa {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.pilihan-layanan .ikon.web {
+  background: var(--utama-muda);
+  color: var(--utama-gelap);
+}
+
+/* Catatan "kalau WhatsApp mati, pakai web" duduk rapat di dasar kartu. */
+.pesan.catatan-gate {
+  margin: 16px 0 0;
+}
+
+.pilihan-layanan .nomor {
+  display: block;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  color: var(--teks-lembut);
+  margin-top: 2px;
+}
+
 /* ------------------------------------------------------------- Form */
 
 .medan {

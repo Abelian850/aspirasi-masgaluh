@@ -308,6 +308,37 @@ isi aspirasi dan identitas pelapor tidak pernah dikirim ke publik.
 Huruf `I`, `O`, angka `0` dan `1` tidak dipakai di bagian acak, supaya warga
 tidak salah membaca saat mencatat.
 
+## Pilihan lapor: WhatsApp atau web
+
+Halaman warga membuka dengan satu pertanyaan: mau lapor lewat WhatsApp, atau
+lewat formulir web. Pengaturannya di `config.js`:
+
+```js
+whatsapp: {
+  aktif: true,
+  tautan: "https://api.whatsapp.com/send/?phone=628xxxxxxxxxx&text&type=phone_number&app_absent=0",
+  nomorTampil: "08xx-xxxx-xxxx",
+  deskripsi: "...",   // kalimat kecil di bawah judul pilihan
+  catatan: "...",     // kotak biru di bawah kedua pilihan
+}
+```
+
+Yang perlu diperhatikan:
+
+- Nomor di dalam `tautan` ditulis dengan kode negara tanpa tanda plus
+  (`6281...`, bukan `081...`). `nomorTampil` hanya untuk dibaca warga, boleh
+  ditulis dengan format lokal.
+- `catatan` adalah pengaman jalur: dia yang memberi tahu warga bahwa formulir
+  web tetap bisa dipakai kalau WhatsApp tidak dibalas atau nomor admin sedang
+  mati. Jangan dihapus tanpa mengganti dengan kalimat yang sepadan — tanpa itu,
+  warga yang chat-nya tidak dibalas akan menyimpulkan layanannya mati.
+- Aspirasi lewat WhatsApp **tidak** masuk dashboard dan tidak dapat nomor
+  tiket; itu percakapan biasa yang harus dicatat admin sendiri. Hanya jalur web
+  yang tercatat dan bisa dilacak warga lewat halaman cek status.
+- `aktif: false` mematikan gerbang ini. Halaman kembali langsung membuka
+  pilihan kategori seperti sebelumnya, dan penomoran langkah mundur satu
+  (jadi "1. Pilih jenis aspirasi") tanpa perlu mengubah HTML.
+
 ## Mengubah kategori dan pertanyaan form
 
 Semua ada di `config.js`. Form di browser dibangun otomatis dari berkas ini,
