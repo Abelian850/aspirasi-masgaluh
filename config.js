@@ -15,11 +15,11 @@
 export default {
   namaSekolah: "SMP Negeri 30 Semarang",
   namaLayanan: "Mas Galuh",
-  // "Mas Galuh" adalah akronim: Media Aspirasi SMP Negeri 30 / Spegaluh.
+  // "Mas Galuh" adalah akronim: Media Aspirasi SMP tiGA puLUH.
   // Kepanjangannya disebut di sini supaya warga tahu ini nama layanan, bukan
   // nama orang.
   deskripsiSingkat:
-    "Media Aspirasi Spegaluh — wadah aspirasi warga sekolah dan masyarakat umum",
+    "Media Aspirasi SMP Tiga Puluh — wadah aspirasi warga sekolah dan masyarakat umum",
   footer: "Dikirim otomatis oleh Layanan Aspirasi Mas Galuh",
 
   // Ditampilkan di halaman awal, sebelum warga memilih jalur pelaporan.
