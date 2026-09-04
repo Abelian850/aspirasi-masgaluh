@@ -22,6 +22,12 @@ export default {
     "Media Aspirasi Spegaluh — wadah aspirasi warga sekolah dan masyarakat umum",
   footer: "Dikirim otomatis oleh Layanan Aspirasi Mas Galuh",
 
+  // Ditampilkan di halaman awal, sebelum warga memilih jalur pelaporan.
+  // Isinya aturan main, bukan hiasan — kosongkan hanya kalau memang tidak
+  // ingin ada imbauan sama sekali.
+  catatanEtika:
+    "Sampaikan dengan santun dan lengkapi identitas pelapor.",
+
   // ---------------------------------------------------------------------------
   // Gerbang pilihan saluran: warga memilih melapor lewat WhatsApp atau lewat
   // web ini. Kalau aktif: false, gerbang tidak ditampilkan dan halaman langsung
@@ -40,14 +46,19 @@ export default {
     tautan:
       "https://api.whatsapp.com/send/?phone=6281319426151&text&type=phone_number&app_absent=0",
     nomorTampil: "0813-1942-6151",
+    // Jangan menulis "chat langsung dengan admin" di sini. Yang menjawab
+    // pertama kali adalah bot; admin membaca dan menindaklanjuti setelahnya.
+    // Warga yang mengira sedang bicara dengan manusia akan menunggu balasan
+    // yang tidak kunjung datang, lalu menyimpulkan aspirasinya diabaikan.
     deskripsi:
-      "Chat langsung dengan admin. Cocok bila Anda ingin bertanya dulu " +
-      "atau lebih nyaman memakai WhatsApp.",
+      "Dibalas otomatis oleh bot terlebih dahulu, lalu ditindaklanjuti " +
+      "admin sekolah. Cocok bila Anda ingin bertanya dulu atau lebih " +
+      "nyaman memakai WhatsApp.",
     catatan:
-      "Bila WhatsApp tidak dapat dihubungi, tidak dibalas, atau nomor admin " +
-      "sedang tidak aktif, aspirasi Anda tetap dapat dikirim lewat formulir " +
-      "web di halaman ini. Laporan lewat web selalu masuk dan diberi nomor " +
-      "tiket yang bisa Anda pantau sendiri.",
+      "Bila WhatsApp tidak dapat dihubungi, bot tidak menjawab, atau " +
+      "balasan admin belum juga datang, aspirasi Anda tetap dapat dikirim " +
+      "lewat formulir web di halaman ini. Laporan lewat web selalu masuk " +
+      "dan diberi nomor tiket yang bisa Anda pantau sendiri.",
   },
 
   // {KATEGORI} otomatis diganti dengan jenis aspirasi yang dipilih warga.

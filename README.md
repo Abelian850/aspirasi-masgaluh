@@ -211,9 +211,12 @@ DNS `smpn30smg.online` sudah berada di Cloudflare (nameserver `bradley` dan
 Di project Pages > **Custom domains** > **Set up a custom domain**:
 
 1. Masukkan `masgaluh.smpn30smg.online` > **Continue** > **Activate domain**.
-2. Ulangi untuk `aspirasi.smpn30smg.online` sebagai alias. Cloudflare
-   mengizinkan beberapa custom domain pada satu project gratis, jadi keduanya
-   akan bekerja.
+
+Alamat resmi layanan ini **hanya** `masgaluh.smpn30smg.online`. Cloudflare
+mengizinkan beberapa custom domain pada satu project gratis, jadi alias seperti
+`aspirasi.smpn30smg.online` bisa ditambahkan kalau nanti diinginkan — tetapi
+alias itu belum pernah dipasang. Jangan mencetak alamat apa pun di poster
+sebelum alamat itu benar-benar terbuka di HP.
 
 Cloudflare membuat CNAME dan sertifikat HTTPS-nya sendiri. Biasanya aktif dalam
 beberapa menit.
@@ -231,9 +234,16 @@ Harus menjawab `"siapPakai": true`.
 Bagikan `masgaluh.smpn30smg.online` lewat grup WhatsApp biasa, poster, atau QR
 code. Warga hanya membuka tautan — tidak perlu menginstal apa pun.
 
+QR code-nya ada di `../qr/qr-masgaluh-smpn30smg.png` (dan `.svg` untuk
+percetakan), dibuat oleh `../qr/buat-qr.py`. QR itu statis dan menunjuk langsung
+ke domain sendiri — tidak lewat layanan pemendek tautan, jadi tidak bisa
+kedaluwarsa atau berubah tujuan. Cetak minimal 2 x 2 cm, dan sisakan ruang putih
+di sekelilingnya.
+
 Pertimbangan jujur: nama merek lebih sulit diingat daripada nama fungsi. Kalau
-"Mas Galuh" belum dikenal luas, pakai `aspirasi.smpn30smg.online` di poster dan
-simpan `masgaluh` untuk keperluan internal. Dua-duanya menuju tempat yang sama.
+"Mas Galuh" belum dikenal luas, pertimbangkan menambah alias yang menyebut
+fungsinya lewat Custom domains, lalu buat ulang QR-nya. Selama alias itu belum
+ada, `masgaluh.smpn30smg.online` adalah satu-satunya alamat yang boleh disebar.
 
 ## Apakah aktif 24 jam?
 
@@ -335,6 +345,15 @@ Yang perlu diperhatikan:
 - Aspirasi lewat WhatsApp **tidak** masuk dashboard dan tidak dapat nomor
   tiket; itu percakapan biasa yang harus dicatat admin sendiri. Hanya jalur web
   yang tercatat dan bisa dilacak warga lewat halaman cek status.
+- Yang menjawab WhatsApp pertama kali adalah **bot**, admin menindaklanjuti
+  setelahnya. Karena itu `deskripsi` tidak boleh berbunyi "chat langsung dengan
+  admin": warga yang mengira sedang bicara dengan manusia akan menunggu balasan
+  yang tidak datang, lalu menyimpulkan aspirasinya diabaikan. Ada uji di
+  `uji.js` yang menolak kalimat itu.
+- `catatanEtika` (di akar `config.js`, di luar blok `whatsapp`) adalah imbauan
+  yang tampil di halaman awal — "Sampaikan dengan santun dan lengkapi identitas
+  pelapor." Kalau gerbang dimatikan, imbauan itu otomatis pindah ke kartu
+  pilihan kategori supaya tidak ikut hilang.
 - `aktif: false` mematikan gerbang ini. Halaman kembali langsung membuka
   pilihan kategori seperti sebelumnya, dan penomoran langkah mundur satu
   (jadi "1. Pilih jenis aspirasi") tanpa perlu mengubah HTML.
@@ -377,6 +396,27 @@ Field bisa dimunculkan bersyarat:
 
 Setelah mengubahnya, jalankan `node uji.js` untuk memastikan tidak ada yang
 rusak.
+
+## Kartu pratinjau saat tautan dibagikan
+
+Tautan situs paling sering disebar lewat WhatsApp dan grup sekolah. Judul dan
+gambar pada kartu pratinjau itu diambil dari tag `og:*` di `public/index.html`,
+bukan dari `config.js` — perayap WhatsApp tidak menjalankan JavaScript, jadi
+apa pun yang diisi lewat `/api/config` tidak terlihat olehnya.
+
+Kalau nama sekolah, nama layanan, atau domainnya berubah, empat baris ini harus
+ikut diubah manual:
+
+```html
+<title>Mas Galuh — SMP Negeri 30 Semarang</title>
+<meta property="og:title"  content="Mas Galuh — SMP Negeri 30 Semarang" />
+<meta property="og:url"    content="https://masgaluh.smpn30smg.online/" />
+<meta property="og:image"  content="https://masgaluh.smpn30smg.online/logo.png" />
+```
+
+Alamat gambar wajib lengkap dengan `https://`. WhatsApp menyimpan pratinjau di
+cache-nya sendiri selama beberapa hari; kalau kartu lama masih muncul setelah
+deploy, itu cache WhatsApp, bukan situsnya.
 
 ## Mengganti logo
 

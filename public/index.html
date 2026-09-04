@@ -3,14 +3,33 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Layanan Aspirasi</title>
+    <title>Mas Galuh — SMP Negeri 30 Semarang</title>
+    <meta
+      name="description"
+      content="Media Aspirasi Spegaluh — wadah aspirasi warga sekolah dan masyarakat umum."
+    />
+    <!-- Tautan ini paling sering disebar lewat WhatsApp. Tanpa tag og:*,
+         WhatsApp menebak sendiri judul dan gambar kartu pratinjaunya, dan
+         tebakannya kemarin salah ("30 Semarang"). Alamat gambar harus lengkap
+         dengan https://, bukan /logo.png — perayap WhatsApp tidak menjalankan
+         JavaScript dan tidak melengkapi alamat relatif. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Mas Galuh" />
+    <meta property="og:title" content="Mas Galuh — SMP Negeri 30 Semarang" />
+    <meta
+      property="og:description"
+      content="Media Aspirasi Spegaluh — wadah aspirasi warga sekolah dan masyarakat umum."
+    />
+    <meta property="og:url" content="https://masgaluh.smpn30smg.online/" />
+    <meta property="og:image" content="https://masgaluh.smpn30smg.online/logo.png" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/png" href="/ikon.png" />
     <link rel="apple-touch-icon" href="/ikon.png" />
     <meta name="theme-color" content="#0f766e" />
     <!-- Angka ?v= wajib dinaikkan setiap kali gaya.css diubah. Cloudflare
          menyuruh browser menyimpan berkas statis 4 jam; tanpa penanda versi,
          perubahan gaya tidak terlihat sampai cache itu habis. -->
-    <link rel="stylesheet" href="/gaya.css?v=3" />
+    <link rel="stylesheet" href="/gaya.css?v=4" />
   </head>
   <body>
     <header class="puncak">
@@ -18,7 +37,8 @@
         <div class="merek">
           <img src="/logo.png" alt="Logo Mas Galuh" />
           <div class="teks">
-            <h1 id="judul">Layanan Aspirasi</h1>
+            <h1 id="judul">Mas Galuh</h1>
+            <p class="sekolah" id="nama-sekolah">SMP Negeri 30 Semarang</p>
             <p id="subjudul">Memuat…</p>
           </div>
           <img
@@ -44,6 +64,7 @@
         <p class="catatan">
           Keduanya sampai ke pihak sekolah. Pilih yang paling nyaman untuk Anda.
         </p>
+        <p class="catatan tegas sembunyi" id="etika-gate"></p>
         <div class="daftar-layanan">
           <a
             class="pilihan-layanan"
@@ -77,6 +98,7 @@
       <section class="kartu sembunyi" id="langkah-kategori">
         <h2 id="judul-kategori">Pilih jenis aspirasi</h2>
         <p class="catatan">Pilih salah satu yang paling sesuai.</p>
+        <p class="catatan tegas sembunyi" id="etika-kategori"></p>
         <div class="daftar-layanan" id="daftar-layanan"></div>
         <div class="baris-tombol sembunyi" id="baris-kembali-gate">
           <button type="button" class="tombol sekunder" id="tombol-kembali-gate">
@@ -164,10 +186,20 @@
       }
 
       function gambarKepala() {
-        el("judul").textContent = `${konfig.namaLayanan} — ${konfig.namaSekolah}`;
+        el("judul").textContent = konfig.namaLayanan;
+        el("nama-sekolah").textContent = konfig.namaSekolah;
         el("subjudul").textContent = konfig.deskripsiSingkat || "";
         el("kaki").textContent = konfig.footer || "";
-        document.title = `${konfig.namaLayanan} — Layanan Aspirasi`;
+        document.title = `${konfig.namaLayanan} — ${konfig.namaSekolah}`;
+
+        // Imbauan hanya ditempel di kartu yang benar-benar jadi halaman awal:
+        // kartu gerbang bila gerbangnya aktif, kartu kategori bila tidak.
+        // Tanpa ini, mematikan gerbang diam-diam menghilangkan imbauannya.
+        const etika = (konfig.catatanEtika || "").trim();
+        if (!etika) return;
+        const sasaran = el(gateAktif ? "etika-gate" : "etika-kategori");
+        sasaran.textContent = etika;
+        sasaran.classList.remove("sembunyi");
       }
 
       // Penomoran judul mengikuti ada-tidaknya gerbang, supaya warga tidak

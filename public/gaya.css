@@ -83,6 +83,18 @@ header.puncak p {
   font-size: 0.95rem;
 }
 
+/* Nama sekolah berdiri sendiri di bawah nama layanan, bukan disambung dengan
+   tanda pisah. Digabung dalam satu baris, di layar sempit judulnya terpotong
+   di tempat yang salah dan yang terbaca tinggal penggalan seperti
+   "30 Semarang". */
+header.puncak .sekolah {
+  margin: 0 0 4px;
+  font-size: 1.02rem;
+  font-weight: 600;
+  opacity: 0.95;
+  letter-spacing: -0.01em;
+}
+
 /* Logo. Kedua berkas berlatar transparan, jadi bisa ditaruh di atas warna apa
    pun. Susunan: logo layanan di kiri, judul di tengah, lambang sekolah di
    kanan. */
@@ -123,6 +135,9 @@ header.puncak p {
   }
   header.puncak h1 {
     font-size: 1.25rem;
+  }
+  header.puncak .sekolah {
+    font-size: 0.95rem;
   }
 }
 
@@ -167,6 +182,16 @@ nav.tautan a[aria-current="page"] {
   margin: 0 0 16px;
   color: var(--teks-lembut);
   font-size: 0.9rem;
+}
+
+/* Imbauan yang bersifat aturan main, bukan keterangan tambahan: warnanya
+   dinaikkan ke warna teks biasa dan diberi garis kuning supaya tidak ikut
+   terbaca sebagai catatan kecil yang boleh dilewati. */
+.kartu .catatan.tegas {
+  color: var(--teks);
+  font-weight: 600;
+  border-left: 3px solid var(--aksen);
+  padding-left: 10px;
 }
 
 /* ------------------------------------------------------- Pilih layanan */

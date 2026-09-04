@@ -103,11 +103,32 @@ console.log("\n1. Konfigurasi");
     cek("catatan jalur cadangan ada", (wa.catatan || "").length > 20);
   }
 
+  // Yang menjawab WhatsApp adalah bot, bukan admin. Menjanjikan "chat
+  // langsung dengan admin" membuat warga menunggu balasan manusia yang tidak
+  // datang, lalu menyimpulkan aspirasinya diabaikan.
+  cek("deskripsi whatsapp tidak menjanjikan admin langsung",
+    !/langsung dengan admin/i.test(wa?.deskripsi || ""), wa?.deskripsi);
+  cek("imbauan santun & identitas terkirim",
+    /santun/i.test(d.config?.catatanEtika || ""), d.config?.catatanEtika);
+
   // Halaman warga memuat gerbang, dan tetap bisa jatuh ke jalur web.
   const beranda = readFileSync(join(here, "public/index.html"), "utf8");
   cek("gerbang saluran ada di halaman", beranda.includes('id="langkah-gate"'));
   cek("pilihan web ada di halaman", beranda.includes('id="pilih-web"'));
   cek("tautan whatsapp dibuka di tab baru", /id="pilih-wa"[\s\S]{0,160}target="_blank"/.test(beranda));
+
+  // Nama sekolah berdiri di baris sendiri, dan imbauan punya tempat di kedua
+  // kemungkinan halaman awal (gerbang aktif atau tidak).
+  cek("nama sekolah punya baris sendiri di kepala", beranda.includes('id="nama-sekolah"'));
+  cek("imbauan punya tempat di gerbang", beranda.includes('id="etika-gate"'));
+  cek("imbauan punya tempat di kartu kategori", beranda.includes('id="etika-kategori"'));
+
+  // Tautan situs paling sering disebar lewat WhatsApp; perayapnya tidak
+  // menjalankan JavaScript, jadi judul dan gambar kartu pratinjau harus ada
+  // di HTML statis dan alamat gambarnya harus lengkap.
+  cek("og:title terpasang", /property="og:title"/.test(beranda));
+  cek("og:image memakai alamat lengkap", /property="og:image" content="https:\/\//.test(beranda));
+  cek("judul statis menyebut sekolah", /<title>[^<]*SMP Negeri 30/.test(beranda));
 }
 
 console.log("\n2. Kirim aspirasi yang sah");
@@ -384,7 +405,7 @@ console.log("\n13. Berkas konfigurasi deploy");
 console.log("\n14. Halaman web tersaji");
 {
   for (const [jalur, tanda] of [
-    ["/", "Layanan Aspirasi"],
+    ["/", "Mas Galuh"],
     ["/status.html", "Cek Status"],
     ["/admin.html", "Dashboard Admin"],
     ["/gaya.css", "--utama"],
