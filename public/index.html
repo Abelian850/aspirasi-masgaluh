@@ -25,42 +25,84 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/png" href="/ikon.png" />
     <link rel="apple-touch-icon" href="/ikon.png" />
-    <meta name="theme-color" content="#0f766e" />
+    <meta name="theme-color" content="#0d1d4f" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    />
     <!-- Angka ?v= wajib dinaikkan setiap kali gaya.css diubah. Cloudflare
          menyuruh browser menyimpan berkas statis 4 jam; tanpa penanda versi,
          perubahan gaya tidak terlihat sampai cache itu habis. -->
-    <link rel="stylesheet" href="/gaya.css?v=4" />
+    <link rel="stylesheet" href="/gaya.css?v=5" />
   </head>
   <body>
-    <header class="puncak">
-      <div class="dalam">
-        <div class="merek">
-          <img src="/logo.png" alt="Logo Mas Galuh" />
-          <div class="teks">
-            <h1 id="judul">Mas Galuh</h1>
-            <p class="sekolah" id="nama-sekolah">SMP Negeri 30 Semarang</p>
-            <p id="subjudul">Memuat…</p>
-          </div>
+    <div class="atas">
+      <header class="kop">
+        <div class="dalam">
+          <a class="merek" href="/">
+            <img src="/logo.png" alt="Logo Mas Galuh" />
+            <span class="nama">
+              <b id="judul">Mas Galuh</b>
+              <small id="nama-sekolah">SMP Negeri 30 Semarang</small>
+            </span>
+          </a>
+          <nav class="tautan" aria-label="Menu utama">
+            <a href="/" aria-current="page">Kirim aspirasi</a>
+            <a href="/status.html">Cek status tiket</a>
+          </nav>
           <img
             class="logo-sekolah"
             src="/logo-sekolah.png"
             alt="Lambang SMP Negeri 30 Semarang"
           />
         </div>
-        <nav class="tautan">
-          <a href="/" aria-current="page">Kirim aspirasi</a>
-          <a href="/status.html">Cek status tiket</a>
-        </nav>
-      </div>
-    </header>
+      </header>
+
+      <section class="pembuka">
+        <div class="dalam">
+          <h1>Sampaikan aspirasi Anda untuk sekolah yang lebih baik</h1>
+          <p class="sub" id="subjudul">
+            Media Aspirasi SMP Tiga Puluh — wadah aspirasi warga sekolah dan masyarakat umum
+          </p>
+          <ol class="alur">
+            <li>
+              <div><b>Isi formulir</b> <span>Pilih jenis aspirasi, lalu tulis keterangannya.</span></div>
+            </li>
+            <li>
+              <div><b>Simpan nomor tiket</b> <span>Nomor tiket langsung muncul setelah terkirim.</span></div>
+            </li>
+            <li>
+              <div><b>Pantau tanggapan</b> <span>Cek status dan balasan sekolah kapan saja.</span></div>
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
 
     <main class="bungkus">
+      <!-- Pemberitahuan saluran WhatsApp. Muncul bila config.whatsapp.aktif
+           bernilai false dan config.whatsapp.pengumuman diisi. -->
+      <aside class="pengumuman sembunyi" id="pengumuman-wa" role="note">
+        <span class="ikon-p" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+            <path d="m9 9 6 6M15 9l-6 6" />
+          </svg>
+        </span>
+        <div>
+          <strong id="judul-pengumuman"></strong>
+          <p id="isi-pengumuman"></p>
+        </div>
+      </aside>
+
       <div id="pesan"></div>
 
       <!-- Langkah 1: pilih saluran (WhatsApp atau web).
            Kartu ini hanya muncul bila config.whatsapp.aktif bernilai true. -->
       <section class="kartu sembunyi" id="langkah-gate">
-        <h2>1. Pilih cara melapor</h2>
+        <h2><span class="no">1</span> Pilih cara melapor</h2>
         <p class="catatan">
           Keduanya sampai ke pihak sekolah. Pilih yang paling nyaman untuk Anda.
         </p>
@@ -94,10 +136,10 @@
         <div class="pesan info catatan-gate" id="catatan-wa"></div>
       </section>
 
-      <!-- Langkah 2: pilih kategori -->
+      <!-- Pilih kategori -->
       <section class="kartu sembunyi" id="langkah-kategori">
-        <h2 id="judul-kategori">Pilih jenis aspirasi</h2>
-        <p class="catatan">Pilih salah satu yang paling sesuai.</p>
+        <h2><span class="no" id="no-kategori">1</span> <span>Pilih jenis aspirasi</span></h2>
+        <p class="catatan">Pilih salah satu yang paling sesuai dengan yang ingin Anda sampaikan.</p>
         <p class="catatan tegas sembunyi" id="etika-kategori"></p>
         <div class="daftar-layanan" id="daftar-layanan"></div>
         <div class="baris-tombol sembunyi" id="baris-kembali-gate">
@@ -107,9 +149,9 @@
         </div>
       </section>
 
-      <!-- Langkah 2: isi form -->
+      <!-- Isi form -->
       <section class="kartu sembunyi" id="langkah-form">
-        <h2 id="judul-form">Isi keterangan</h2>
+        <h2><span class="no" id="no-form">2</span> <span id="judul-form">Isi keterangan</span></h2>
         <p class="catatan" id="ket-form"></p>
         <form id="form" novalidate>
           <div id="medan-form"></div>
@@ -126,7 +168,7 @@
         </form>
       </section>
 
-      <!-- Langkah 3: tanda terima -->
+      <!-- Tanda terima -->
       <section class="kartu sembunyi" id="langkah-selesai">
         <h2>Aspirasi terkirim</h2>
         <p class="catatan" id="teks-konfirmasi"></p>
@@ -146,22 +188,39 @@
       </section>
     </main>
 
-    <footer class="kaki" id="kaki"></footer>
+    <footer class="kaki">
+      <div class="dalam">
+        <img src="/logo-sekolah.png" alt="" />
+        <p>
+          <b>Mas Galuh</b>, Media Aspirasi SMP Tiga Puluh<br />
+          Dikelola oleh SMP Negeri 30 Semarang
+        </p>
+      </div>
+    </footer>
 
     <script type="module">
       const el = (id) => document.getElementById(id);
       let konfig = null;
       let layananTerpilih = null;
       // Gerbang saluran aktif hanya bila config menyediakan tautan WhatsApp.
-      // Kalau tidak, halaman berperilaku persis seperti sebelum gerbang ada:
-      // langsung membuka pilihan kategori, dan penomoran langkah mundur satu.
+      // Kalau tidak, halaman langsung membuka pilihan kategori, dan penomoran
+      // langkah mundur satu.
       let gateAktif = false;
+
+      // Ikon garis per kategori. Kunci = id layanan di config.js; kategori baru
+      // tanpa ikon di sini memakai karakter `ikon` dari config.
+      const IKON = {
+        1: '<path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
+        2: '<path d="M9 18h6M10 22h4"/><path d="M15.1 14c.2-1 .7-1.7 1.4-2.5A4.6 4.6 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/>',
+        3: '<path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/>',
+        4: '<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>',
+      };
 
       function tampilkanPesan(teks, jenis = "galat") {
         el("pesan").innerHTML = teks
           ? `<div class="pesan ${jenis}">${teks.replace(/</g, "&lt;")}</div>`
           : "";
-        if (teks) window.scrollTo({ top: 0, behavior: "smooth" });
+        if (teks) el("pesan").scrollIntoView({ behavior: "smooth", block: "center" });
       }
 
       async function muat() {
@@ -173,6 +232,7 @@
           const wa = konfig.whatsapp;
           gateAktif = Boolean(wa && wa.aktif && wa.tautan);
           gambarKepala();
+          gambarPengumuman();
           gambarGate();
           gambarLayanan();
           if (gateAktif) {
@@ -188,13 +248,11 @@
       function gambarKepala() {
         el("judul").textContent = konfig.namaLayanan;
         el("nama-sekolah").textContent = konfig.namaSekolah;
-        el("subjudul").textContent = konfig.deskripsiSingkat || "";
-        el("kaki").textContent = konfig.footer || "";
+        if (konfig.deskripsiSingkat) el("subjudul").textContent = konfig.deskripsiSingkat;
         document.title = `${konfig.namaLayanan} — ${konfig.namaSekolah}`;
 
         // Imbauan hanya ditempel di kartu yang benar-benar jadi halaman awal:
         // kartu gerbang bila gerbangnya aktif, kartu kategori bila tidak.
-        // Tanpa ini, mematikan gerbang diam-diam menghilangkan imbauannya.
         const etika = (konfig.catatanEtika || "").trim();
         if (!etika) return;
         const sasaran = el(gateAktif ? "etika-gate" : "etika-kategori");
@@ -202,16 +260,25 @@
         sasaran.classList.remove("sembunyi");
       }
 
-      // Penomoran judul mengikuti ada-tidaknya gerbang, supaya warga tidak
-      // membaca "2. Pilih jenis aspirasi" pada halaman yang cuma punya dua
-      // langkah.
+      // Pemberitahuan "WhatsApp belum tersedia" hanya tampil saat gerbang
+      // WhatsApp dimatikan, supaya warga tidak mengirim laporan ke nomor yang
+      // belum dilayani.
+      function gambarPengumuman() {
+        const p = konfig.whatsapp && konfig.whatsapp.pengumuman;
+        if (gateAktif || !p || !p.judul) return;
+        el("judul-pengumuman").textContent = p.judul;
+        el("isi-pengumuman").textContent = p.isi || "";
+        el("pengumuman-wa").classList.remove("sembunyi");
+      }
+
       function nomor(langkahDenganGate) {
         return gateAktif ? langkahDenganGate : langkahDenganGate - 1;
       }
 
       function gambarGate() {
         const wa = konfig.whatsapp || {};
-        el("judul-kategori").textContent = `${nomor(2)}. Pilih jenis aspirasi`;
+        el("no-kategori").textContent = nomor(2);
+        el("no-form").textContent = nomor(3);
         if (!gateAktif) return;
         el("pilih-wa").href = wa.tautan;
         el("ket-wa").textContent = wa.deskripsi || "";
@@ -240,7 +307,14 @@
               <strong></strong>
               <span class="ket"></span>
             </span>`;
-          b.querySelector(".ikon").textContent = l.ikon || l.id;
+          const ikon = b.querySelector(".ikon");
+          if (IKON[l.id]) {
+            ikon.innerHTML =
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+              'stroke-linecap="round" stroke-linejoin="round">' + IKON[l.id] + "</svg>";
+          } else {
+            ikon.textContent = l.ikon || l.id;
+          }
           b.querySelector("strong").textContent = l.nama;
           b.querySelector(".ket").textContent = l.deskripsi || "";
           b.addEventListener("click", () => pilih(l, b));
@@ -316,7 +390,7 @@
       }
 
       function gambarForm() {
-        el("judul-form").textContent = `${nomor(3)}. Isi keterangan — ${layananTerpilih.nama}`;
+        el("judul-form").textContent = `Isi keterangan: ${layananTerpilih.nama}`;
         el("ket-form").textContent =
           "Tanda * berarti wajib diisi. Gunakan bahasa yang sopan dan jelas.";
         const wadah = el("medan-form");
@@ -397,14 +471,13 @@
         el("teks-konfirmasi").textContent = data.pesan || "";
         el("kode-tiket").textContent = data.kode;
         el("tautan-status").href = `/status.html?kode=${encodeURIComponent(data.kode)}`;
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        el("langkah-selesai").scrollIntoView({ behavior: "smooth", block: "start" });
       }
 
       el("pilih-web").addEventListener("click", bukaJalurWeb);
 
       // Tautan WhatsApp tetap berjalan normal (buka tab baru). Yang ditambahkan
-      // di sini hanya pengingat: kalau tab itu tidak terbuka atau chat tidak
-      // dibalas, jalur web masih tersedia di halaman yang sama.
+      // di sini hanya pengingat bahwa jalur web masih tersedia.
       el("pilih-wa").addEventListener("click", () => {
         tampilkanPesan(
           "WhatsApp dibuka di tab baru. Bila tidak terbuka atau tidak dibalas, " +
@@ -443,6 +516,7 @@
           .querySelectorAll("#daftar-layanan .pilihan-layanan")
           .forEach((x) => x.setAttribute("aria-pressed", "false"));
         tampilkanPesan("");
+        el("langkah-kategori").scrollIntoView({ behavior: "smooth", block: "start" });
       });
 
       el("tombol-salin").addEventListener("click", async () => {

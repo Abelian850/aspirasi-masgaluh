@@ -101,6 +101,12 @@ console.log("\n1. Konfigurasi");
     cek("tautan whatsapp diisi", /^https:\/\/(api\.whatsapp\.com|wa\.me)\//.test(wa.tautan || ""), wa.tautan);
     cek("nomor whatsapp pakai kode negara", /[?/]phone=\d{10,15}|wa\.me\/\d{10,15}/.test(wa.tautan || ""), wa.tautan);
     cek("catatan jalur cadangan ada", (wa.catatan || "").length > 20);
+  } else if (wa) {
+    // Jalur WhatsApp dimatikan: warga harus diberi tahu, bukan dibiarkan
+    // menebak. Tanpa pengumuman, sebagian akan tetap mengirim ke nomor lama.
+    cek("pengumuman whatsapp belum tersedia diisi",
+      (wa.pengumuman?.judul || "").length > 10 && (wa.pengumuman?.isi || "").length > 20,
+      JSON.stringify(wa.pengumuman));
   }
 
   // Yang menjawab WhatsApp adalah bot, bukan admin. Menjanjikan "chat
@@ -115,6 +121,7 @@ console.log("\n1. Konfigurasi");
   const beranda = readFileSync(join(here, "public/index.html"), "utf8");
   cek("gerbang saluran ada di halaman", beranda.includes('id="langkah-gate"'));
   cek("pilihan web ada di halaman", beranda.includes('id="pilih-web"'));
+  cek("tempat pengumuman whatsapp ada di halaman", beranda.includes('id="pengumuman-wa"'));
   cek("tautan whatsapp dibuka di tab baru", /id="pilih-wa"[\s\S]{0,160}target="_blank"/.test(beranda));
 
   // Nama sekolah berdiri di baris sendiri, dan imbauan punya tempat di kedua

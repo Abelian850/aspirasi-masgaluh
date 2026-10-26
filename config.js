@@ -40,9 +40,22 @@ export default {
   // catatan muncul di bawah kedua pilihan. Ini yang memberi tahu warga bahwa
   // web tetap bisa dipakai bila WhatsApp tidak dibalas atau sedang mati, jadi
   // jangan dihapus tanpa mengganti dengan kalimat yang sepadan.
+  //
+  // pengumuman tampil di atas formulir HANYA saat aktif: false. Dipakai untuk
+  // memberi tahu warga bahwa jalur WhatsApp belum dilayani, supaya mereka
+  // tidak mengirim laporan ke nomor yang tidak dibaca. Saat jalur WhatsApp
+  // siap, cukup ubah aktif menjadi true — pengumuman otomatis hilang dan
+  // gerbang pilihan WhatsApp/web muncul kembali.
   // ---------------------------------------------------------------------------
   whatsapp: {
-    aktif: true,
+    aktif: false,
+    pengumuman: {
+      judul: "Laporan lewat WhatsApp belum tersedia",
+      isi:
+        "Untuk sementara, mohon tidak mengirim aspirasi atau laporan melalui " +
+        "WhatsApp karena belum dapat kami terima dan tindak lanjuti. Gunakan " +
+        "formulir di bawah ini; setiap laporan langsung mendapat nomor tiket.",
+    },
     tautan:
       "https://api.whatsapp.com/send/?phone=6281319426151&text&type=phone_number&app_absent=0",
     nomorTampil: "0813-1942-6151",

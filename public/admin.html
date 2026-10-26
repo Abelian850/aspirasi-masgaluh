@@ -4,36 +4,51 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
-    <title>Dashboard Admin — Layanan Aspirasi</title>
+    <title>Dashboard Admin — Mas Galuh</title>
     <link rel="icon" type="image/png" href="/ikon.png" />
-    <meta name="theme-color" content="#0f766e" />
+    <meta name="theme-color" content="#0d1d4f" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    />
     <!-- Naikkan ?v= tiap kali gaya.css diubah. Lihat catatan di index.html. -->
-    <link rel="stylesheet" href="/gaya.css?v=4" />
+    <link rel="stylesheet" href="/gaya.css?v=5" />
   </head>
-  <body>
-    <header class="puncak lebar">
-      <div class="dalam">
-        <div class="merek">
-          <img src="/logo.png" alt="Logo Mas Galuh" />
-          <div class="teks">
-            <h1>Dashboard Admin</h1>
-            <p id="subjudul">Kelola dan tanggapi aspirasi yang masuk.</p>
-          </div>
+  <body class="lebar">
+    <div class="atas">
+      <header class="kop">
+        <div class="dalam">
+          <a class="merek" href="/">
+            <img src="/logo.png" alt="Logo Mas Galuh" />
+            <span class="nama">
+              <b>Mas Galuh</b>
+              <small>SMP Negeri 30 Semarang</small>
+            </span>
+          </a>
+          <nav class="tautan" aria-label="Menu utama">
+            <a href="/">Form warga</a>
+            <a href="/status.html">Cek status</a>
+            <a href="#" id="tautan-keluar" class="sembunyi">Keluar</a>
+          </nav>
           <img
             class="logo-sekolah"
             src="/logo-sekolah.png"
             alt="Lambang SMP Negeri 30 Semarang"
           />
         </div>
-        <nav class="tautan">
-          <a href="/">Form warga</a>
-          <a href="/status.html">Cek status</a>
-          <a href="#" id="tautan-keluar" class="sembunyi">Keluar</a>
-        </nav>
-      </div>
-    </header>
+      </header>
 
-    <main class="bungkus lebar">
+      <section class="pembuka pendek">
+        <div class="dalam">
+          <h1>Dashboard Admin</h1>
+          <p class="sub" id="subjudul">Kelola dan tanggapi aspirasi yang masuk.</p>
+        </div>
+      </section>
+    </div>
+
+    <main class="bungkus">
       <div id="pesan"></div>
 
       <!-- Layar masuk -->
@@ -76,7 +91,15 @@
       </section>
     </main>
 
-    <footer class="kaki" id="kaki"></footer>
+    <footer class="kaki">
+      <div class="dalam">
+        <img src="/logo-sekolah.png" alt="" />
+        <p>
+          <b>Mas Galuh</b>, Media Aspirasi SMP Tiga Puluh<br />
+          Dikelola oleh SMP Negeri 30 Semarang
+        </p>
+      </div>
+    </footer>
 
     <script type="module">
       const el = (id) => document.getElementById(id);
@@ -364,8 +387,7 @@
         .then((r) => r.json())
         .then((d) => {
           if (!d.ok) return;
-          el("kaki").textContent = d.config.footer || "";
-          el("subjudul").textContent = `${d.config.namaLayanan} — ${d.config.namaSekolah}`;
+          el("subjudul").textContent = `Kelola dan tanggapi aspirasi yang masuk ke ${d.config.namaLayanan}.`;
         })
         .catch(() => {});
 

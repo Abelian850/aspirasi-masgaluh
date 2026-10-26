@@ -1,204 +1,430 @@
-/* Gaya bersama untuk seluruh halaman Layanan Aspirasi. */
+/* Gaya bersama untuk seluruh halaman Layanan Aspirasi Mas Galuh.
 
-/* Palet diturunkan dari lambang SMP Negeri 30 Semarang.
-   Warna asli lambang: biru #003CF9, merah #EB3237, kuning #FEF011.
-   Biru lambang terlalu jenuh untuk dipakai sebagai warna antarmuka — dipakai
-   apa adanya, teks di atasnya sulit dibaca dan matanya cepat lelah. Yang
-   dipakai di sini navy serumpun (rona 224 derajat, praktis sama dengan
-   lambang) yang digelapkan sampai kontrasnya terhadap putih 10,4:1.
-   Kuning lambang dipakai sebagai aksen, bukan warna teks. */
+   Palet diturunkan dari lambang SMP Negeri 30 Semarang (biru #003CF9,
+   merah #EB3237, kuning #FEF011). Biru lambang terlalu jenuh untuk antarmuka,
+   jadi yang dipakai navy serumpun yang digelapkan; kontras teks putih di atas
+   --utama 10:1. Kuning dan merah lambang hanya dipakai sebagai aksen kecil
+   (garis kop, nomor langkah, tanda wajib), tidak pernah untuk teks panjang.
+
+   Huruf: Plus Jakarta Sans — dirancang untuk identitas kota Jakarta, terasa
+   "resmi Indonesia" tanpa kaku. Bila Google Fonts gagal dimuat, halaman tetap
+   rapi dengan huruf sistem.
+
+   Kelas lama (.kartu, .pilihan-layanan, .tombol, .lencana, .aspirasi, dst.)
+   sengaja dipertahankan karena dipakai skrip di ketiga halaman. */
+
 :root {
-  --utama: #1e3a8a;
-  --utama-gelap: #172e6e;
-  --utama-muda: #dbeafe;
-  --aksen: #facc15;
-  --teks: #1f2937;
-  --teks-lembut: #6b7280;
-  --garis: #e5e7eb;
-  --latar: #f8fafc;
+  --kop: #0d1d4f;
+  --kop-2: #142b6e;
+  --utama: #1d3a8f;
+  --utama-gelap: #152c6e;
+  --utama-muda: #e7edfb;
+  --utama-garis: #c6d3f3;
+  --aksen: #f5c518;
+  --merah: #c8232c;
+  --teks: #172033;
+  --teks-lembut: #586379;
+  --garis: #dde3ee;
+  --latar: #f1f4f9;
   --kartu: #ffffff;
-  --bahaya: #b91c1c;
-  --bahaya-muda: #fee2e2;
-  --peringatan: #b45309;
-  --peringatan-muda: #fef3c7;
-  --sukses: #15803d;
-  --sukses-muda: #dcfce7;
-  --radius: 12px;
-  --bayang: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --bahaya: #b42318;
+  --bahaya-muda: #fdecea;
+  --peringatan: #8a4b00;
+  --peringatan-muda: #fff6db;
+  --peringatan-garis: #f3d27a;
+  --sukses: #146c3a;
+  --sukses-muda: #e3f5ea;
+  --r-besar: 16px;
+  --r: 10px;
+  --r-kecil: 8px;
+  --bayang: 0 1px 2px rgba(13, 29, 79, 0.06), 0 8px 24px -12px rgba(13, 29, 79, 0.18);
+  --huruf: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--huruf);
   font-size: 16px;
   line-height: 1.6;
   color: var(--teks);
   background: var(--latar);
-  -webkit-text-size-adjust: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.bungkus {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 0 16px 64px;
+main {
+  flex: 1 0 auto;
 }
 
-.bungkus.lebar {
-  max-width: 1080px;
+a {
+  color: var(--utama);
 }
 
-/* ------------------------------------------------------------- Kepala */
+:focus-visible {
+  outline: 3px solid var(--aksen);
+  outline-offset: 2px;
+}
 
-header.puncak {
-  background: linear-gradient(135deg, #142a63 0%, var(--utama) 55%, #2b4fc4 100%);
+.sembunyi {
+  display: none !important;
+}
+
+/* ================================================================ Kop */
+
+/* Kop dan pembuka berbagi satu latar navy, ditutup garis kuning lambang.
+   Logo Mas Galuh berwarna emas dan putih, jadi kop memang harus gelap. */
+.atas {
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgba(43, 79, 196, 0.55) 0%, transparent 55%),
+    linear-gradient(160deg, var(--kop) 0%, var(--kop-2) 100%);
   color: #fff;
-  padding: 24px 16px 26px;
-  margin-bottom: 24px;
-  /* Garis kuning tipis mengambil warna pita "SMP 30 SEMARANG" di lambang. */
-  border-bottom: 3px solid var(--aksen);
+  border-bottom: 4px solid var(--aksen);
 }
 
-header.puncak .dalam {
-  max-width: 720px;
-  margin: 0 auto;
+.kop {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-header.puncak.lebar .dalam {
-  max-width: 1080px;
+.kop .dalam,
+.pembuka .dalam,
+.bungkus,
+.kaki .dalam {
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
-header.puncak h1 {
-  margin: 0 0 4px;
-  font-size: 1.5rem;
-  letter-spacing: -0.01em;
+.lebar .kop .dalam,
+.lebar .pembuka .dalam,
+.lebar .bungkus,
+.lebar .kaki .dalam {
+  max-width: 1120px;
 }
 
-header.puncak p {
-  margin: 0;
-  opacity: 0.85;
-  font-size: 0.95rem;
+.kop .dalam {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 72px;
 }
 
-/* Nama sekolah berdiri sendiri di bawah nama layanan, bukan disambung dengan
-   tanda pisah. Digabung dalam satu baris, di layar sempit judulnya terpotong
-   di tempat yang salah dan yang terbaca tinggal penggalan seperti
-   "30 Semarang". */
-header.puncak .sekolah {
-  margin: 0 0 4px;
-  font-size: 1.02rem;
-  font-weight: 600;
-  opacity: 0.95;
-  letter-spacing: -0.01em;
-}
-
-/* Logo. Kedua berkas berlatar transparan, jadi bisa ditaruh di atas warna apa
-   pun. Susunan: logo layanan di kiri, judul di tengah, lambang sekolah di
-   kanan. */
 .merek {
   display: flex;
   align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
+  gap: 12px;
+  color: #fff;
+  text-decoration: none;
+  min-width: 0;
 }
 
 .merek img {
-  height: 62px;
+  height: 44px;
   width: auto;
   flex: 0 0 auto;
-  /* Bayangan tipis supaya emas dan putih tetap terbaca di atas latar navy. */
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
 }
 
-.merek .teks {
-  /* Melar mengisi ruang sisa supaya lambang sekolah terdorong ke tepi kanan. */
-  flex: 1 1 220px;
-  min-width: 200px;
+.merek .nama {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
 }
 
-/* Lambang sekolah sedikit lebih kecil: bentuknya padat dan berwarna penuh,
-   kalau disamakan tingginya dia mendominasi logo layanan. */
-.merek .logo-sekolah {
-  height: 54px;
-  margin-left: auto;
+.merek .nama b {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
-@media (max-width: 480px) {
-  .merek img {
-    height: 46px;
-  }
-  .merek .logo-sekolah {
-    height: 40px;
-  }
-  header.puncak h1 {
-    font-size: 1.25rem;
-  }
-  header.puncak .sekolah {
-    font-size: 0.95rem;
-  }
+.merek .nama small {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  white-space: nowrap;
 }
 
 nav.tautan {
-  margin-top: 16px;
+  margin-left: auto;
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 4px;
 }
 
 nav.tautan a {
-  color: #fff;
+  color: rgba(255, 255, 255, 0.82);
   text-decoration: none;
   font-size: 0.875rem;
-  padding: 6px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 999px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: var(--r-kecil);
+  white-space: nowrap;
 }
 
-nav.tautan a:hover,
+nav.tautan a:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
 nav.tautan a[aria-current="page"] {
-  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
 }
 
-/* ------------------------------------------------------------- Kartu */
+.kop .logo-sekolah {
+  height: 40px;
+  width: auto;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+
+/* =========================================================== Pembuka */
+
+.pembuka .dalam {
+  padding-top: 36px;
+  padding-bottom: 80px;
+}
+
+.pembuka h1 {
+  margin: 0;
+  font-size: clamp(1.65rem, 4.4vw, 2.4rem);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  max-width: 19ch;
+  text-wrap: balance;
+}
+
+.pembuka .sub {
+  margin: 12px 0 0;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 56ch;
+}
+
+/* Alur tiga langkah memang berurutan, jadi diberi nomor. */
+.alur {
+  list-style: none;
+  margin: 28px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  counter-reset: alur;
+}
+
+.alur li {
+  counter-increment: alur;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.alur li::before {
+  content: counter(alur);
+  flex: 0 0 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: var(--kop);
+  background: var(--aksen);
+}
+
+.alur b {
+  display: block;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* Halaman status dan admin: pembuka lebih ringkas. */
+.pembuka.pendek .dalam {
+  padding-top: 28px;
+  padding-bottom: 68px;
+}
+
+.pembuka.pendek h1 {
+  font-size: clamp(1.45rem, 3.6vw, 1.9rem);
+  max-width: none;
+}
+
+@media (max-width: 640px) {
+  .kop .dalam {
+    flex-wrap: wrap;
+    padding-top: 12px;
+    gap: 8px 10px;
+    min-height: 0;
+  }
+  .merek img {
+    height: 38px;
+  }
+  .kop .logo-sekolah {
+    height: 34px;
+    margin-left: auto;
+  }
+  nav.tautan {
+    order: 3;
+    width: 100%;
+    margin-left: -12px;
+    padding-bottom: 6px;
+  }
+  .pembuka .dalam {
+    padding-top: 22px;
+    padding-bottom: 66px;
+  }
+  .alur {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 20px;
+  }
+  .alur li {
+    align-items: center;
+  }
+  .alur b {
+    display: inline;
+  }
+  .alur li span {
+    display: none;
+  }
+}
+
+/* ============================================================ Isi */
+
+.bungkus {
+  padding-bottom: 56px;
+  /* Kartu pertama naik menimpa dasar pembuka. */
+  margin-top: -48px;
+  position: relative;
+  width: 100%;
+}
 
 .kartu {
   background: var(--kartu);
   border: 1px solid var(--garis);
-  border-radius: var(--radius);
+  border-radius: var(--r-besar);
   box-shadow: var(--bayang);
-  padding: 20px;
+  padding: 24px;
   margin-bottom: 16px;
 }
 
 .kartu h2 {
   margin: 0 0 4px;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.3;
+}
+
+.kartu h2 .no {
+  flex: 0 0 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--utama);
+  color: #fff;
+  font-size: 0.85rem;
 }
 
 .kartu .catatan {
-  margin: 0 0 16px;
+  margin: 0 0 18px;
   color: var(--teks-lembut);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
 }
 
-/* Imbauan yang bersifat aturan main, bukan keterangan tambahan: warnanya
-   dinaikkan ke warna teks biasa dan diberi garis kuning supaya tidak ikut
-   terbaca sebagai catatan kecil yang boleh dilewati. */
 .kartu .catatan.tegas {
   color: var(--teks);
   font-weight: 600;
+  background: var(--latar);
   border-left: 3px solid var(--aksen);
-  padding-left: 10px;
+  border-radius: 0 var(--r-kecil) var(--r-kecil) 0;
+  padding: 10px 12px;
 }
 
-/* ------------------------------------------------------- Pilih layanan */
+@media (max-width: 480px) {
+  .kartu {
+    padding: 20px 16px;
+    border-radius: 14px;
+  }
+}
+
+/* ===================================================== Pengumuman WA */
+
+.pengumuman {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: var(--peringatan-muda);
+  border: 1px solid var(--peringatan-garis);
+  border-radius: var(--r-besar);
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  color: #6b3c00;
+  box-shadow: var(--bayang);
+}
+
+.pengumuman .ikon-p {
+  flex: 0 0 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid var(--peringatan-garis);
+  display: grid;
+  place-items: center;
+  color: var(--peringatan);
+}
+
+.pengumuman .ikon-p svg {
+  width: 22px;
+  height: 22px;
+}
+
+.pengumuman strong {
+  display: block;
+  color: #4d2a00;
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 2px;
+  line-height: 1.4;
+}
+
+.pengumuman p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+/* =================================================== Pilih layanan */
 
 .daftar-layanan {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+}
+
+@media (max-width: 560px) {
+  .daftar-layanan {
+    grid-template-columns: 1fr;
+  }
 }
 
 .pilihan-layanan {
@@ -209,17 +435,17 @@ nav.tautan a[aria-current="page"] {
   text-align: left;
   padding: 14px 16px;
   border: 1px solid var(--garis);
-  border-radius: var(--radius);
+  border-radius: var(--r);
   background: var(--kartu);
   cursor: pointer;
   font: inherit;
   color: inherit;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color 0.15s, background-color 0.15s;
 }
 
 .pilihan-layanan:hover {
-  border-color: var(--utama);
-  background: #eff4ff;
+  border-color: var(--utama-garis);
+  background: #f7f9fe;
 }
 
 .pilihan-layanan[aria-pressed="true"] {
@@ -229,85 +455,89 @@ nav.tautan a[aria-current="page"] {
 }
 
 .pilihan-layanan .ikon {
-  flex: 0 0 34px;
-  height: 34px;
-  border-radius: 8px;
+  flex: 0 0 38px;
+  height: 38px;
+  border-radius: 10px;
   background: var(--utama-muda);
-  color: var(--utama-gelap);
+  color: var(--utama);
   display: grid;
   place-items: center;
-  font-weight: 700;
+  font-weight: 800;
+}
+
+.pilihan-layanan[aria-pressed="true"] .ikon {
+  background: var(--utama);
+  color: #fff;
+}
+
+.pilihan-layanan .ikon svg {
+  width: 20px;
+  height: 20px;
 }
 
 .pilihan-layanan strong {
   display: block;
   font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .pilihan-layanan span.ket {
   display: block;
   color: var(--teks-lembut);
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   line-height: 1.45;
+  margin-top: 2px;
 }
 
-/* ------------------------------------------------- Gerbang saluran */
+/* Gerbang saluran (dipakai lagi bila WhatsApp diaktifkan di config.js). */
+#langkah-gate .daftar-layanan {
+  grid-template-columns: 1fr;
+}
 
-/* Pilihan "lapor lewat WhatsApp" adalah tautan keluar, bukan tombol, supaya
-   bisa dibuka di tab baru dan disalin alamatnya. Tampilannya disamakan dengan
-   .pilihan-layanan agar kedua pilihan terlihat setara — web tidak boleh
-   terkesan sebagai jalur cadangan. */
 a.pilihan-layanan {
   text-decoration: none;
 }
 
-/* Hijau WhatsApp dipakai hanya pada kotak ikon, tidak pada teks, supaya
-   kontras teks tetap mengikuti palet utama. */
 .pilihan-layanan .ikon.wa {
-  background: #dcfce7;
-  color: #15803d;
-}
-
-.pilihan-layanan .ikon.web {
-  background: var(--utama-muda);
-  color: var(--utama-gelap);
-}
-
-/* Catatan "kalau WhatsApp mati, pakai web" duduk rapat di dasar kartu. */
-.pesan.catatan-gate {
-  margin: 16px 0 0;
+  background: var(--sukses-muda);
+  color: var(--sukses);
 }
 
 .pilihan-layanan .nomor {
   display: block;
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-family: var(--mono);
   font-size: 0.85rem;
   color: var(--teks-lembut);
   margin-top: 2px;
 }
 
-/* ------------------------------------------------------------- Form */
+.pesan.catatan-gate {
+  margin: 16px 0 0;
+}
+
+/* ============================================================ Form */
 
 .medan {
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .medan label {
   display: block;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.9rem;
   margin-bottom: 6px;
 }
 
 .medan .wajib {
-  color: var(--bahaya);
+  color: var(--merah);
 }
 
 .medan .bantuan {
   display: block;
   font-weight: 400;
   color: var(--teks-lembut);
-  font-size: 0.825rem;
+  font-size: 0.82rem;
   margin-top: 2px;
 }
 
@@ -317,32 +547,34 @@ input[type="search"],
 select,
 textarea {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--garis);
-  border-radius: 8px;
+  padding: 11px 13px;
+  border: 1px solid #cfd6e3;
+  border-radius: var(--r-kecil);
   font: inherit;
+  font-size: 1rem; /* 16px mencegah iPhone memperbesar layar saat mengetik */
   color: inherit;
   background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #8b93a5;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
-  outline: 2px solid var(--utama);
-  outline-offset: -1px;
+  outline: none;
   border-color: var(--utama);
+  box-shadow: 0 0 0 3px rgba(29, 58, 143, 0.18);
 }
 
 textarea {
-  min-height: 120px;
+  min-height: 130px;
   resize: vertical;
 }
 
-.sembunyi {
-  display: none !important;
-}
-
-/* Perangkap robot: tak terlihat manusia, tetap terbaca oleh skrip otomatis. */
 .jebakan {
   position: absolute;
   left: -9999px;
@@ -351,7 +583,7 @@ textarea {
   overflow: hidden;
 }
 
-/* ------------------------------------------------------------ Tombol */
+/* ========================================================== Tombol */
 
 button.tombol,
 a.tombol {
@@ -359,15 +591,16 @@ a.tombol {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 11px 20px;
+  padding: 12px 22px;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--r-kecil);
   background: var(--utama);
   color: #fff;
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   text-decoration: none;
+  transition: background-color 0.15s;
 }
 
 button.tombol:hover,
@@ -384,15 +617,16 @@ button.tombol.sekunder,
 a.tombol.sekunder {
   background: #fff;
   color: var(--teks);
-  border-color: var(--garis);
+  border-color: #cfd6e3;
 }
 
-button.tombol.sekunder:hover {
+button.tombol.sekunder:hover,
+a.tombol.sekunder:hover {
   background: var(--latar);
 }
 
 button.tombol.kecil {
-  padding: 6px 12px;
+  padding: 7px 13px;
   font-size: 0.85rem;
 }
 
@@ -400,14 +634,21 @@ button.tombol.kecil {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  margin-top: 20px;
+  margin-top: 22px;
 }
 
-/* ------------------------------------------------------------- Pesan */
+@media (max-width: 480px) {
+  #form .baris-tombol .tombol,
+  #langkah-selesai .baris-tombol .tombol {
+    flex: 1 1 100%;
+  }
+}
+
+/* =========================================================== Pesan */
 
 .pesan {
   padding: 12px 14px;
-  border-radius: 8px;
+  border-radius: var(--r);
   font-size: 0.9rem;
   margin-bottom: 16px;
   border: 1px solid transparent;
@@ -416,54 +657,79 @@ button.tombol.kecil {
 .pesan.galat {
   background: var(--bahaya-muda);
   color: var(--bahaya);
-  border-color: #fecaca;
+  border-color: #f6c7c1;
 }
 
 .pesan.info {
   background: var(--utama-muda);
   color: var(--utama-gelap);
-  border-color: #bfdbfe;
+  border-color: var(--utama-garis);
 }
 
 .pesan.sukses {
   background: var(--sukses-muda);
   color: var(--sukses);
-  border-color: #bbf7d0;
+  border-color: #b9e4c8;
 }
 
-/* --------------------------------------------------------- Kode tiket */
+/* ====================================================== Kode tiket */
 
+/* Dibentuk seperti sobekan karcis: dua takik di sisi dan garis putus-putus. */
 .kotak-tiket {
+  position: relative;
   text-align: center;
-  padding: 24px;
-  background: var(--utama-muda);
-  border: 1px dashed var(--utama);
-  border-radius: var(--radius);
+  padding: 20px 24px 24px;
+  background: var(--kop);
+  color: #fff;
+  border-radius: var(--r);
   margin: 20px 0;
+  overflow: hidden;
+}
+
+.kotak-tiket::before,
+.kotak-tiket::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  margin-top: -11px;
+  border-radius: 50%;
+  background: var(--kartu);
+}
+
+.kotak-tiket::before {
+  left: -11px;
+}
+
+.kotak-tiket::after {
+  right: -11px;
 }
 
 .kotak-tiket .label {
   font-size: 0.85rem;
-  color: var(--utama-gelap);
-  margin-bottom: 6px;
+  color: rgba(255, 255, 255, 0.75);
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.22);
 }
 
 .kotak-tiket .kode {
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 1.9rem;
+  font-family: var(--mono);
+  font-size: 2.1rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--utama-gelap);
+  letter-spacing: 0.1em;
+  color: var(--aksen);
 }
 
-/* -------------------------------------------------------------- Lencana */
+/* ========================================================= Lencana */
 
 .lencana {
   display: inline-block;
   padding: 3px 10px;
   border-radius: 999px;
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
 }
 
@@ -472,10 +738,8 @@ button.tombol.kecil {
   color: var(--peringatan);
 }
 
-/* Nila, bukan biru. Sejak tema utama jadi navy, lencana biru tidak lagi
-   terbaca sebagai status — dia melebur dengan warna antarmuka. */
 .lencana.diproses {
-  background: #e0e7ff;
+  background: #e4e7ff;
   color: #3730a3;
 }
 
@@ -490,11 +754,30 @@ button.tombol.kecil {
   border: 1px solid var(--garis);
 }
 
-/* -------------------------------------------------------- Dashboard */
+/* ===================================================== Hasil status */
+
+dl.rincian {
+  margin: 14px 0 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 10px 24px;
+  font-size: 0.95rem;
+}
+
+dl.rincian dt {
+  color: var(--teks-lembut);
+}
+
+dl.rincian dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* ======================================================= Dashboard */
 
 .ringkas {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
   margin-bottom: 20px;
 }
@@ -502,14 +785,15 @@ button.tombol.kecil {
 .ringkas .angka {
   background: var(--kartu);
   border: 1px solid var(--garis);
-  border-radius: var(--radius);
+  border-radius: var(--r);
+  box-shadow: var(--bayang);
   padding: 14px 16px;
-  text-align: center;
 }
 
 .ringkas .angka b {
   display: block;
-  font-size: 1.6rem;
+  font-size: 1.75rem;
+  font-weight: 800;
   line-height: 1.2;
 }
 
@@ -527,16 +811,17 @@ button.tombol.kecil {
 }
 
 .penyaring input[type="search"] {
-  flex: 1 1 200px;
+  flex: 1 1 220px;
   width: auto;
+  padding: 8px 12px;
 }
 
 .aspirasi {
   background: var(--kartu);
   border: 1px solid var(--garis);
-  border-radius: var(--radius);
+  border-radius: var(--r);
   box-shadow: var(--bayang);
-  padding: 16px 18px;
+  padding: 18px 20px;
   margin-bottom: 12px;
 }
 
@@ -545,11 +830,11 @@ button.tombol.kecil {
   gap: 10px;
   align-items: center;
   flex-wrap: wrap;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .aspirasi .kepala .kode {
-  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-family: var(--mono);
   font-weight: 700;
 }
 
@@ -562,8 +847,8 @@ button.tombol.kecil {
 .aspirasi dl {
   margin: 0 0 12px;
   display: grid;
-  grid-template-columns: minmax(120px, auto) 1fr;
-  gap: 4px 14px;
+  grid-template-columns: minmax(130px, auto) 1fr;
+  gap: 4px 16px;
   font-size: 0.92rem;
 }
 
@@ -588,33 +873,72 @@ button.tombol.kecil {
   margin-bottom: 10px;
 }
 
+.kotak-balasan select {
+  padding: 7px 10px;
+  font-size: 0.9rem;
+}
+
 .balasan-tersimpan {
   background: var(--sukses-muda);
   border-left: 3px solid var(--sukses);
   padding: 10px 14px;
-  border-radius: 6px;
-  font-size: 0.9rem;
+  border-radius: 0 var(--r-kecil) var(--r-kecil) 0;
+  font-size: 0.92rem;
   margin-bottom: 12px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
-footer.kaki {
-  text-align: center;
+/* ========================================================== Kaki */
+
+.kaki {
+  border-top: 1px solid var(--garis);
+  background: #fff;
   color: var(--teks-lembut);
-  font-size: 0.82rem;
-  padding: 24px 16px;
+  font-size: 0.85rem;
+}
+
+.kaki .dalam {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 20px;
+  padding-bottom: 24px;
+}
+
+.kaki img {
+  height: 38px;
+  width: auto;
+  flex: 0 0 auto;
+}
+
+.kaki p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.kaki b {
+  color: var(--teks);
 }
 
 @media (max-width: 540px) {
-  .aspirasi dl {
+  .aspirasi dl,
+  dl.rincian {
     grid-template-columns: 1fr;
     gap: 2px;
   }
-  .aspirasi dt {
+  .aspirasi dt,
+  dl.rincian dt {
     margin-top: 8px;
   }
   .kotak-tiket .kode {
-    font-size: 1.5rem;
+    font-size: 1.65rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    scroll-behavior: auto !important;
   }
 }

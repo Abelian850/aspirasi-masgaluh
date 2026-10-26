@@ -3,35 +3,49 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Cek Status Aspirasi</title>
+    <title>Cek Status Aspirasi — Mas Galuh</title>
     <link rel="icon" type="image/png" href="/ikon.png" />
     <link rel="apple-touch-icon" href="/ikon.png" />
-    <meta name="theme-color" content="#0f766e" />
+    <meta name="theme-color" content="#0d1d4f" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    />
     <!-- Naikkan ?v= tiap kali gaya.css diubah. Lihat catatan di index.html. -->
-    <link rel="stylesheet" href="/gaya.css?v=4" />
+    <link rel="stylesheet" href="/gaya.css?v=5" />
   </head>
   <body>
-    <header class="puncak">
-      <div class="dalam">
-        <div class="merek">
-          <img src="/logo.png" alt="Logo Mas Galuh" />
-          <div class="teks">
-            <h1>Cek Status Aspirasi</h1>
-            <p class="sekolah">SMP Negeri 30 Semarang</p>
-            <p>Masukkan nomor tiket yang Anda terima saat mengirim aspirasi.</p>
-          </div>
+    <div class="atas">
+      <header class="kop">
+        <div class="dalam">
+          <a class="merek" href="/">
+            <img src="/logo.png" alt="Logo Mas Galuh" />
+            <span class="nama">
+              <b>Mas Galuh</b>
+              <small>SMP Negeri 30 Semarang</small>
+            </span>
+          </a>
+          <nav class="tautan" aria-label="Menu utama">
+            <a href="/">Kirim aspirasi</a>
+            <a href="/status.html" aria-current="page">Cek status tiket</a>
+          </nav>
           <img
             class="logo-sekolah"
             src="/logo-sekolah.png"
             alt="Lambang SMP Negeri 30 Semarang"
           />
         </div>
-        <nav class="tautan">
-          <a href="/">Kirim aspirasi</a>
-          <a href="/status.html" aria-current="page">Cek status tiket</a>
-        </nav>
-      </div>
-    </header>
+      </header>
+
+      <section class="pembuka pendek">
+        <div class="dalam">
+          <h1>Cek Status Aspirasi</h1>
+          <p class="sub">Masukkan nomor tiket yang Anda terima saat mengirim aspirasi untuk melihat tindak lanjut dan tanggapan sekolah.</p>
+        </div>
+      </section>
+    </div>
 
     <main class="bungkus">
       <div id="pesan"></div>
@@ -65,7 +79,15 @@
       </section>
     </main>
 
-    <footer class="kaki" id="kaki"></footer>
+    <footer class="kaki">
+      <div class="dalam">
+        <img src="/logo-sekolah.png" alt="" />
+        <p>
+          <b>Mas Galuh</b>, Media Aspirasi SMP Tiga Puluh<br />
+          Dikelola oleh SMP Negeri 30 Semarang
+        </p>
+      </div>
+    </footer>
 
     <script type="module">
       const el = (id) => document.getElementById(id);
@@ -145,7 +167,7 @@
           const judul = document.createElement("h2");
           judul.textContent = "Tanggapan dari sekolah";
           judul.style.fontSize = "1rem";
-          judul.style.marginTop = "20px";
+          judul.style.margin = "22px 0 8px";
           const isi = document.createElement("div");
           isi.className = "balasan-tersimpan";
           isi.textContent = t.balasan;
@@ -174,12 +196,6 @@
         periksa(el("kode").value.trim().toUpperCase());
       });
 
-      fetch("/api/config")
-        .then((r) => r.json())
-        .then((d) => {
-          if (d.ok) el("kaki").textContent = d.config.footer || "";
-        })
-        .catch(() => {});
 
       // Kalau datang dari halaman kirim, tiket sudah terisi dan langsung diperiksa.
       const awal = new URLSearchParams(location.search).get("kode");
